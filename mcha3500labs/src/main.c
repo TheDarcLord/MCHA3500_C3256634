@@ -8,6 +8,7 @@
 #include "heartbeat_task.h"
 #include "dummy_task.h"
 #include "potentiometer.h"
+#include "data_logging.h"
 
 static void SystemClock_Config(void);
 static void Error_Handler(void);
@@ -28,7 +29,8 @@ int main(void)
     heartbeat_task_init();
     cmd_task_init();
     dummy_task_init();
-
+    logging_init();
+    
     // Start scheduler
     osKernelStart();
 

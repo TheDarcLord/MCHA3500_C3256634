@@ -7,6 +7,7 @@
 #include "cmd_line_buffer.h"
 #include "cmd_parser.h"
 #include "potentiometer.h"
+#include "data_logging.h"
 
 
 // Type for each command table entry
@@ -22,17 +23,18 @@ typedef struct
 static void _help(int, char *[]);
 static void _reset(int, char *[]);
 static void _cmd_getPotentiometerVoltage(int, char *[]);
-
+static void _cmd_logPotentiometerVoltage(int, char *[]) ;
 // Modules that provide commands
 #include "heartbeat_cmd.h"
 
 // Command table
 static CMD_T cmd_table[] =
 {
-    {_help                          , "help"        , ""                          , "Displays this help message"             } ,
-    {_reset                         , "reset"       , ""                          , "Restarts the system."                   } ,
-    {_cmd_getPotentiometerVoltage   , "getPot"      , ""                          , "Displays Potentiometer voltage level"   } , 
-    {heartbeat_cmd                  , "heartbeat"   , "[start|stop]"              , "Get status or start/stop heartbeat task"} ,
+    {_help                          , "help"        , ""                          , "Displays this help message"                } ,
+    {_reset                         , "reset"       , ""                          , "Restarts the system."                      } ,
+    {_cmd_getPotentiometerVoltage   , "getPot"      , ""                          , "Displays Potentiometer voltage level"      } ,
+    {_cmd_logPotentiometerVoltage   , "logPot"      , ""                          , "Logs Potentiometer voltage level for 2 sec"} , 
+    {heartbeat_cmd                  , "heartbeat"   , "[start|stop]"              , "Get status or start/stop heartbeat task"   } ,
 };
 enum {CMD_TABLE_SIZE = sizeof(cmd_table)/sizeof(CMD_T)};
 enum {CMD_MAX_TOKENS = 5};      // Maximum number of tokens to process (command + arguments)
@@ -43,6 +45,7 @@ static void _print_chip_pinout(void);
 void _cmd_getPotentiometerVoltage(int argc, char *argv[]) 
 {
     UNUSED(argv);
+    
     const float POT_VMAX = 3.3;
 
     if (argc <= 1)
@@ -53,6 +56,13 @@ void _cmd_getPotentiometerVoltage(int argc, char *argv[])
     {
         printf("%s: invalid argument \"%s\", syntax is: %s\n", argv[0], argv[1], argv[0]);
     }
+}
+
+void _cmd_logPotentiometerVoltage(int argc, char *argv[]) 
+{
+    UNUSED(argv);
+    UNUSED(argc);
+    potentiometer_logging_start();
 }
 
 void _help(int argc, char *argv[])
