@@ -35,11 +35,11 @@ void pot_init(void)
                 sequence rank of 1,
                 480 cycle sample time,
                 offset of 0.                            */
-        ADC_ChannelConfTypeDef sConfigADC;
-        sConfigADC.Channel = ADC_CHANNEL_8;
-        sConfigADC.Rank = 1;
-        sConfigADC.SamplingTime = ADC_SAMPLETIME_480CYCLES;
-        sConfigADC.Offset = 0;
+        ADC_ChannelConfTypeDef channelConfigADC;
+        channelConfigADC.Channel = ADC_CHANNEL_8;
+        channelConfigADC.Rank = 1;
+        channelConfigADC.SamplingTime = ADC_SAMPLETIME_480CYCLES;
+        channelConfigADC.Offset = 0;
 
         /* Enable ADC1 clock */
         /* Enable GPIOB clock */
@@ -60,7 +60,7 @@ void pot_init(void)
             return;
         }
         /* Initialise the ADC channel config */
-        if(HAL_ADC_ConfigChannel(&_hadc1, &sConfigADC) != HAL_OK)
+        if(HAL_ADC_ConfigChannel(&_hadc1, &channelConfigADC) != HAL_OK)
         {
             printf("Error configuring ADC channel!\n");
             return;

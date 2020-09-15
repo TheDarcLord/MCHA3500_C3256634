@@ -1,8 +1,9 @@
 #include "stm32f4xx_hal.h"
 #include "cmsis_os2.h"
-
 #include "stm32f4xx_hal_pwr_ex.h"
 
+#include "motor.h"
+#include "encoder.h"
 #include "uart.h"
 #include "cmd_task.h"
 #include "heartbeat_task.h"
@@ -25,6 +26,8 @@ int main(void)
     uart_init();
 
     // Initialise task modules
+    encoder_init();
+    motor_init();
     pot_init();
     heartbeat_task_init();
     cmd_task_init();

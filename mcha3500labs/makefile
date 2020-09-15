@@ -46,7 +46,9 @@ SRC_STM = \
 	$(SRCDIR)/heartbeat_cmd.c \
 	$(SRCDIR)/dummy_task.c \
 	$(SRCDIR)/potentiometer.c \
-	$(SRCDIR)/data_logging.c
+	$(SRCDIR)/data_logging.c \
+	$(SRCDIR)/motor.c \
+	$(SRCDIR)/encoder.c 
 	
 # Assembly source files
 A_SRC = \
