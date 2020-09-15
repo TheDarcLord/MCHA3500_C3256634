@@ -23,18 +23,20 @@ typedef struct
 static void _help(int, char *[]);
 static void _reset(int, char *[]);
 static void _cmd_getPotentiometerVoltage(int, char *[]);
-static void _cmd_logPotentiometerVoltage(int, char *[]) ;
+static void _cmd_logPotentiometerVoltage(int, char *[]);
+static void _cmd_logIMUpot(int argc, char *argv[]);
 // Modules that provide commands
 #include "heartbeat_cmd.h"
 
 // Command table
 static CMD_T cmd_table[] =
 {
-    {_help                          , "help"        , ""                          , "Displays this help message"                } ,
-    {_reset                         , "reset"       , ""                          , "Restarts the system."                      } ,
-    {_cmd_getPotentiometerVoltage   , "getPot"      , ""                          , "Displays Potentiometer voltage level"      } ,
-    {_cmd_logPotentiometerVoltage   , "logPot"      , ""                          , "Logs Potentiometer voltage level for 2 sec"} , 
-    {heartbeat_cmd                  , "heartbeat"   , "[start|stop]"              , "Get status or start/stop heartbeat task"   } ,
+    {_help                          , "help"        , ""                          , "Displays this help message"                        } ,
+    {_reset                         , "reset"       , ""                          , "Restarts the system."                              } ,
+    {_cmd_getPotentiometerVoltage   , "getPot"      , ""                          , "Displays Potentiometer voltage level"              } ,
+    {_cmd_logPotentiometerVoltage   , "logPot"      , ""                          , "Logs Potentiometer voltage level for 2 sec"        } , 
+    {_cmd_logIMUpot                 , "logIMUPot"   , ""                          , "Logs IMU & Potentiometer voltage level for 5 sec"  } , 
+    {heartbeat_cmd                  , "heartbeat"   , "[start|stop]"              , "Get status or start/stop heartbeat task"           } ,
 };
 enum {CMD_TABLE_SIZE = sizeof(cmd_table)/sizeof(CMD_T)};
 enum {CMD_MAX_TOKENS = 5};      // Maximum number of tokens to process (command + arguments)
@@ -45,12 +47,10 @@ static void _print_chip_pinout(void);
 void _cmd_getPotentiometerVoltage(int argc, char *argv[]) 
 {
     UNUSED(argv);
-    
-    const float POT_VMAX = 3.3;
 
     if (argc <= 1)
     {
-        printf("Potentiometer ADC Voltage is %f V \n", ((pot_get_value() * POT_VMAX) / 4095.0));
+        printf("Potentiometer ADC Voltage is %f V \n", get_pot_voltage());
     }
     else
     {
@@ -62,7 +62,14 @@ void _cmd_logPotentiometerVoltage(int argc, char *argv[])
 {
     UNUSED(argv);
     UNUSED(argc);
-    data_logging_start();
+    data_logging_start(POT);
+}
+
+void _cmd_logIMUpot(int argc, char *argv[]) 
+{
+    UNUSED(argv);
+    UNUSED(argc);
+    data_logging_start(IMU_POT);
 }
 
 void _help(int argc, char *argv[])

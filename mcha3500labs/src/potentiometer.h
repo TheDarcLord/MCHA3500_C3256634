@@ -11,5 +11,6 @@ enum {
 void     pot_init(void);
 void     pot_deinit(void);
 uint16_t pot_get_value(void);
+float get_pot_voltage(void);
 
 #endif

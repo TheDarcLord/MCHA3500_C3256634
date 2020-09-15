@@ -59,12 +59,14 @@ void dummy_task_update(void *arg)
     UNUSED(arg);
     while(1)
     {   
+        /*
         IMU_read();
         //float Z = get_accZ();
         float X = get_gyroX();
         float theta = get_angle(0);
         printf("MPU-X \nAngle: %f \nVelocity: %f \n", theta, X);
         osDelay(1000);
+        */
     }
 }
 

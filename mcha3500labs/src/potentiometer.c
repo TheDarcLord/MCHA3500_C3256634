@@ -9,10 +9,11 @@
 
 ADC_HandleTypeDef _hadc1;
 
+const float POT_VMAX = 3.3;
+const float BIT12MAX = 4095.0;
 static uint8_t _is_init = 0;
 
-void pot_init(void)
-{
+void pot_init(void) {
     if (!_is_init)
     {
         /* Configure ADC1 instance to be initialised with:
@@ -86,14 +87,15 @@ uint16_t pot_get_value(void)
 {
     /* Poll the ADC conversion */
     uint16_t result = 0;
-    if(HAL_ADC_PollForConversion(&_hadc1, 0xFF) != HAL_OK)
-    {
+    if(HAL_ADC_PollForConversion(&_hadc1, 0xFF) != HAL_OK) {
         printf("Error polling for ADC conversion! \n");
-    }
-    else
-    {
+    } else {
         /* Get and return the 12-bit result */
         result = HAL_ADC_GetValue(&_hadc1);
     }
     return result;
+}
+
+float get_pot_voltage(void) {
+    return (float) ((pot_get_value() * POT_VMAX) / BIT12MAX);
 }
