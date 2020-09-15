@@ -6,9 +6,11 @@
 #include <stdint.h>
 #include <limits.h>
 
-void log_potentiometer(void *argument);
+static void log_pointer(void *argument);
 void logging_init(void);
-void potentiometer_logging_start(void);
-void potentiometer_logging_stop(void);
+void data_logging_start(void);
+void data_logging_stop(void);
+// Sensors to Log
+static void log_potentiometer(void *argument);
 
 #endif

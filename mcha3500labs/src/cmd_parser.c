@@ -62,7 +62,7 @@ void _cmd_logPotentiometerVoltage(int argc, char *argv[])
 {
     UNUSED(argv);
     UNUSED(argc);
-    potentiometer_logging_start();
+    data_logging_start();
 }
 
 void _help(int argc, char *argv[])

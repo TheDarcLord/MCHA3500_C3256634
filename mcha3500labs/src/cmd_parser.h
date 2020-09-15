@@ -2,6 +2,7 @@
 #define CMD_PARSER_H
 
 #include "cmd_line_buffer.h"
+#include "data_logging.h"
 
 void cmd_parse(char *);
 
