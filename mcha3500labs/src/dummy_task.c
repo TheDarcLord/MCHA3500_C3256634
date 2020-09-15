@@ -59,9 +59,9 @@ void dummy_task_update(void *arg)
     UNUSED(arg);
     while(1)
     {
-        // TODO: Add print statements for motor and potentiometer
-
-        // Non-blocking delay to wait
+        IMU_read();
+        float Y = get_accY();
+        printf("Gravity: MPU-Y %f \n", Y);
         osDelay(1000);
     }
 }

@@ -8,6 +8,9 @@
 
 uint16_t logCount;
 osTimerId_t _dataLogID;
+static osTimerAttr_t _dataLogATTR = {
+    .name = "datalog"
+};
 static void (*log_function)(void);              // Variable to point to function we intend to log
 static void log_pointer(void *argument);
 static void log_potentiometer(void *argument);
@@ -17,7 +20,7 @@ void data_logging_stop(void);
 
 void logging_init(void) {
     /* Initialise timer for use with generic data logging */
-    _dataLogID = osTimerNew(log_pointer, osTimerPeriodic, NULL, NULL);
+    _dataLogID = osTimerNew(log_pointer, osTimerPeriodic, NULL, &_dataLogATTR);
 }
 
 static void log_pointer(void *argument) {

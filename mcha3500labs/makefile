@@ -45,9 +45,10 @@ SRC_STM = \
 	$(SRCDIR)/uart.c \
 	$(SRCDIR)/heartbeat_task.c \
 	$(SRCDIR)/heartbeat_cmd.c \
-	$(SRCDIR)/dummy_task.c \
+	$(SRCDIR)/IMU.c \
 	$(SRCDIR)/potentiometer.c \
-	$(SRCDIR)/data_logging.c
+	$(SRCDIR)/data_logging.c \
+	$(SRCDIR)/dummy_task.c 
 
 SRC_MPU6050LIB = \
 	$(MPU6050LIB_ROOT)/tm_stm32_gpio.c \

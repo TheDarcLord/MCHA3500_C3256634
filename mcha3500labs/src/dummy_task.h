@@ -2,6 +2,7 @@
 #define DUMMY_TASK_H
 
 #include <stdint.h>
+#include "IMU.h"
 
 void    dummy_task_init(void);
 void    dummy_task_deinit(void);
