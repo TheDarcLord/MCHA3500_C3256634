@@ -1,6 +1,7 @@
 #include "IMU.h"
 
-const float EIGHTG = 78.48;
+const float ACC_8G = 78.48;
+const float GYR_MX = 500.0;
 const float MIDPNT = 19.00;
 const float RANGE  = 65553.00;
 TM_MPU6050_t MPU_6050;          // Data Struct -> Holds X, Y & Z etc.
@@ -20,6 +21,9 @@ static uint8_t _is_init = 0;
 void IMU_init(void);
 void IMU_read(void);
 float get_accY(void);
+float get_accZ(void);
+float get_gyroX(void);
+float get_angle(int form);
 
 void IMU_init(void) {
     /* Initialise IMU with AD0 LOW, acceleration sensitivity +-4g, gyroscope +-250 deg/s */
@@ -39,29 +43,61 @@ void IMU_read(void)
     TM_MPU6050_ReadAll(&MPU_6050);
 }
 
+/*  
+    int16 t can store the values −32786 to 32767 and 1g = 9.81ms−2. 
+    Consider how you can convert the return value at a sensitivity of ±4g.
+    RANGE: 65,553 MID: 32,776.5
+    -4g = -32786
+    0g = -9.5
+    +4g = 32767
+    4g = 4*9.81 = 39.24
+*/
+
 float get_accY(void) {
     float data = (float) MPU_6050.Accelerometer_Y;
-    /*  
-        int16 t can store the values −32786 to 32767 and 1g = 9.81ms−2. 
-        Consider how you can convert the return value at a sensitivity of ±4g.
-        RANGE: 65,553 MID: 32,776.5
-        -4g = -32786
-        0g = -9.5
-        +4g = 32767
-        4g = 4*9.81 = 39.24
-
-              X 
-
-        4g = Xmax 
-        0g = 
-        -4g = Xmin
-    */
     if(data > -9.5) {
-        return (float) data * (EIGHTG/(RANGE - MIDPNT));
+        return (float) data * (ACC_8G/(RANGE - MIDPNT));
     } else if(data < -9.5) {
-        return (float) data * (EIGHTG/(RANGE + MIDPNT));
+        return (float) data * (ACC_8G/(RANGE + MIDPNT));
     } else {
         // Not Possible but clears up compiler errors
         return (float) 0.0;
+    }
+}
+
+float get_accZ(void) {
+    float data = (float) MPU_6050.Accelerometer_Z;
+    if(data > -9.5) {
+        return (float) data * (ACC_8G/(RANGE - MIDPNT));
+    } else if(data < -9.5) {
+        return (float) data * (ACC_8G/(RANGE + MIDPNT));
+    } else {
+        // Not Possible but clears up compiler errors
+        return (float) 0.0;
+    }
+}
+
+float get_gyroX(void) {
+    float data = (float) MPU_6050.Gyroscope_X;
+    if(data > -9.5) {
+        return (float) data * (GYR_MX/(RANGE - MIDPNT)) * (M_PI / 180.0);
+    } else if(data < -9.5) {
+        return (float) data * (GYR_MX/(RANGE + MIDPNT)) * (M_PI / 180.0);
+    } else {
+        // Not Possible but clears up compiler errors
+        return (float) 0.0;
+    }
+
+   //return(data);
+}
+
+float get_angle(int form) {
+    switch(form) {
+        case 0:
+            return (-1 * atan2(get_accZ(),get_accY()) * (180.0 / M_PI) );
+        break;
+        default:
+            return (-1 * atan2(get_accZ(),get_accY()));
+        break;
     }
 }
