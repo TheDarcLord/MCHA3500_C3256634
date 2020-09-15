@@ -2,10 +2,12 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-#include <inttypes.h> // For PRIxx and SCNxx macros
-#include "stm32f4xx_hal.h" // to import UNUSED() macro
+#include <inttypes.h>           // For PRIxx and SCNxx macros
+#include "stm32f4xx_hal.h"      // to import UNUSED() macro
 #include "cmd_line_buffer.h"
 #include "cmd_parser.h"
+#include "potentiometer.h"
+
 
 // Type for each command table entry
 typedef struct
@@ -19,6 +21,7 @@ typedef struct
 // Forward declaration for built-in commands
 static void _help(int, char *[]);
 static void _reset(int, char *[]);
+static void _cmd_getPotentiometerVoltage(int, char *[]);
 
 // Modules that provide commands
 #include "heartbeat_cmd.h"
@@ -26,16 +29,31 @@ static void _reset(int, char *[]);
 // Command table
 static CMD_T cmd_table[] =
 {
-    {_help              , "help"        , ""                          , "Displays this help message"             } ,
-    {_reset             , "reset"       , ""                          , "Restarts the system."                   } ,
-    {heartbeat_cmd      , "heartbeat"   , "[start|stop]"              , "Get status or start/stop heartbeat task"} ,
+    {_help                          , "help"        , ""                          , "Displays this help message"             } ,
+    {_reset                         , "reset"       , ""                          , "Restarts the system."                   } ,
+    {_cmd_getPotentiometerVoltage   , "getPot"      , ""                          , "Displays Potentiometer voltage level"   } , 
+    {heartbeat_cmd                  , "heartbeat"   , "[start|stop]"              , "Get status or start/stop heartbeat task"} ,
 };
 enum {CMD_TABLE_SIZE = sizeof(cmd_table)/sizeof(CMD_T)};
 enum {CMD_MAX_TOKENS = 5};      // Maximum number of tokens to process (command + arguments)
 
 // Command function definitions
-
 static void _print_chip_pinout(void);
+
+void _cmd_getPotentiometerVoltage(int argc, char *argv[]) 
+{
+    UNUSED(argv);
+    const float POT_VMAX = 3.3;
+
+    if (argc <= 1)
+    {
+        printf("Potentiometer ADC Voltage is %f V \n", ((pot_get_value() * POT_VMAX) / 4095.0));
+    }
+    else
+    {
+        printf("%s: invalid argument \"%s\", syntax is: %s\n", argv[0], argv[1], argv[0]);
+    }
+}
 
 void _help(int argc, char *argv[])
 {

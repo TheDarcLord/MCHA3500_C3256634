@@ -7,6 +7,7 @@
 #include "cmd_task.h"
 #include "heartbeat_task.h"
 #include "dummy_task.h"
+#include "potentiometer.h"
 
 static void SystemClock_Config(void);
 static void Error_Handler(void);
@@ -23,6 +24,7 @@ int main(void)
     uart_init();
 
     // Initialise task modules
+    pot_init();
     heartbeat_task_init();
     cmd_task_init();
     dummy_task_init();
