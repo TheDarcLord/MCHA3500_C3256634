@@ -46,7 +46,8 @@ SRC_STM = \
 	$(SRCDIR)/heartbeat_cmd.c \
 	$(SRCDIR)/dummy_task.c \
 	$(SRCDIR)/potentiometer.c \
-	$(SRCDIR)/data_logging.c
+	$(SRCDIR)/data_logging.c \
+	$(SRCDIR)/uart_servo.c \
 	
 # Assembly source files
 A_SRC = \
@@ -76,7 +77,9 @@ SRC_STM_CUBE = \
 	$(SRCSTMCUBEDIR)/stm32f4xx_hal_spi.c \
 	$(SRCSTMCUBEDIR)/stm32f4xx_hal_dac.c \
 	$(SRCSTMCUBEDIR)/stm32f4xx_hal_dac_ex.c \
-	$(SRCSTMCUBEDIR)/stm32f4xx_hal_can.c
+	$(SRCSTMCUBEDIR)/stm32f4xx_hal_can.c \
+	$(SRCSTMCUBEDIR)/stm32f4xx_hal_uart.c \
+	$(SRCSTMCUBEDIR)/stm32f4xx_hal_usart.c \
 
 # Source for FreeRTOSv10 CMSISv2
 SRC_RTOS = \

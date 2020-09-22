@@ -4,6 +4,7 @@
 #include "stm32f4xx_hal_pwr_ex.h"
 
 #include "uart.h"
+#include "uart_servo.h"
 #include "cmd_task.h"
 #include "heartbeat_task.h"
 #include "dummy_task.h"
@@ -12,6 +13,7 @@
 
 static void SystemClock_Config(void);
 static void Error_Handler(void);
+
 
 int main(void)
 {
@@ -23,7 +25,9 @@ int main(void)
 
     // Initialise hardware modules
     uart_init();
-
+    servo_comms_init();
+    servo_command();
+    
     // Initialise task modules
     pot_init();
     heartbeat_task_init();
@@ -31,6 +35,8 @@ int main(void)
     dummy_task_init();
     logging_init();
     
+    
+
     // Start scheduler
     osKernelStart();
 
