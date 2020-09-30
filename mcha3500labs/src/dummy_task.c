@@ -5,6 +5,8 @@
 #include "stm32f4xx_hal.h"
 #include "cmsis_os2.h"
 #include "uart.h"
+#include "motor.h"
+#include "encoder.h"
 
 static void dummy_task_update(void *arg);
 
@@ -59,10 +61,13 @@ void dummy_task_update(void *arg)
     UNUSED(arg);
     while(1)
     {
+        //float POS = encoder_get_count();
+        //printf("Encoder: %f \n", POS);
         // TODO: Add print statements for motor and potentiometer
 
         // Non-blocking delay to wait
-        osDelay(1000);
+        printf("enc %f \n", encoder_get_count());
+        osDelay(10);
     }
 }
 

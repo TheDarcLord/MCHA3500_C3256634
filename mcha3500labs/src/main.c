@@ -28,6 +28,10 @@ int main(void)
     // Initialise task modules
     encoder_init();
     motor_init();
+
+    // TEST ->
+    _motor_set_dutycyle(0.3);
+
     pot_init();
     heartbeat_task_init();
     cmd_task_init();
