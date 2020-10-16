@@ -27,9 +27,16 @@ void servo_comms_init(void) {
 }
 
 void servo_command(void) {
-    char c1[] = {0xAA, 0x00, 0x00, 0x00};
-    char c2[] = {0x84, 0x00, 0x40, 0x3E};
-
+    char cA[] = {0xAA, 0x00, 0x00, 0x00};
+    HAL_UART_Transmit(&_uart3, (uint8_t*)&cA, 4, 0xFFFF);
+    /*
+    char c0[] = {0x84, 0x00, 0x40, 0x3E};
+    char c1[] = {0x84, 0x01, 0x40, 0x3E};
+    char c2[] = {0x84, 0x02, 0x40, 0x3E};
+    char c3[] = {0x84, 0x03, 0x40, 0x3E};
+    HAL_UART_Transmit(&_uart3, (uint8_t*)&c0, 4, 0xFFFF);
     HAL_UART_Transmit(&_uart3, (uint8_t*)&c1, 4, 0xFFFF);
     HAL_UART_Transmit(&_uart3, (uint8_t*)&c2, 4, 0xFFFF);
+    HAL_UART_Transmit(&_uart3, (uint8_t*)&c3, 4, 0xFFFF);
+    */
 }
