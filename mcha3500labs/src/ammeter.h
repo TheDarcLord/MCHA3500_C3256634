@@ -16,7 +16,8 @@ void    ammeter_deinit(void);
 void    ammeter_init(void);
 
 /* 140mV per Amp 
- * -> PC4
+ * -> PC4 - CHANNEL 14 ! -> ADC12_IN14
+ * -> ADC 1 or 2 ... IN channel 14
  * 3.3V <-> 4095.0
  * 
  *     3.3V            

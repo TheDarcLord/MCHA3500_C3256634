@@ -24,22 +24,22 @@ void ammeter_init(void)
         _hadc1.Init.NbrOfConversion = 1;
 
         /* Configure the ADC to:
-                use channel 8,
+                use channel 12,
                 sequence rank of 1,
                 480 cycle sample time,
                 offset of 0.                            */
         ADC_ChannelConfTypeDef channelConfigADC;
-        channelConfigADC.Channel = ADC_CHANNEL_12;
+        channelConfigADC.Channel = ADC_CHANNEL_14;
         channelConfigADC.Rank = 1;
         channelConfigADC.SamplingTime = ADC_SAMPLETIME_480CYCLES;
         channelConfigADC.Offset = 0;
 
         /* Enable ADC1 clock */
         /* Enable GPIOB clock */
-        __HAL_RCC_ADC2_CLK_ENABLE();
+        __HAL_RCC_ADC1_CLK_ENABLE();
         __HAL_RCC_GPIOC_CLK_ENABLE();
 
-        /* Configure PB0 in analog mode, no pullup */
+        /* Configure PC4 in analog mode, no pullup */
         GPIO_InitTypeDef  GPIO_InitStructure;
         GPIO_InitStructure.Pin = GPIO_PIN_4;
         GPIO_InitStructure.Mode = GPIO_MODE_ANALOG;

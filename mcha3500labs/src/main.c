@@ -32,9 +32,9 @@ int main(void)
     ammeter_init();
 
     // TEST ->
-    //_motor_set_dutycyle(0.3);
+    //
 
-    pot_init();
+    //pot_init();
     heartbeat_task_init();
     cmd_task_init();
     dummy_task_init();
