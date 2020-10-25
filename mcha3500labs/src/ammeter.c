@@ -1,10 +1,10 @@
-#include "potentiometer.h"
+#include "ammeter.h"
 
 ADC_HandleTypeDef _hadc1;
 
 static uint8_t _is_init = 0;
 
-void pot_init(void)
+void ammeter_init(void)
 {
     if (!_is_init)
     {
@@ -29,22 +29,22 @@ void pot_init(void)
                 480 cycle sample time,
                 offset of 0.                            */
         ADC_ChannelConfTypeDef channelConfigADC;
-        channelConfigADC.Channel = ADC_CHANNEL_8;
+        channelConfigADC.Channel = ADC_CHANNEL_12;
         channelConfigADC.Rank = 1;
         channelConfigADC.SamplingTime = ADC_SAMPLETIME_480CYCLES;
         channelConfigADC.Offset = 0;
 
         /* Enable ADC1 clock */
         /* Enable GPIOB clock */
-        __HAL_RCC_ADC1_CLK_ENABLE();
-        __HAL_RCC_GPIOB_CLK_ENABLE();
+        __HAL_RCC_ADC2_CLK_ENABLE();
+        __HAL_RCC_GPIOC_CLK_ENABLE();
 
         /* Configure PB0 in analog mode, no pullup */
         GPIO_InitTypeDef  GPIO_InitStructure;
-        GPIO_InitStructure.Pin = GPIO_PIN_0;
+        GPIO_InitStructure.Pin = GPIO_PIN_4;
         GPIO_InitStructure.Mode = GPIO_MODE_ANALOG;
         GPIO_InitStructure.Pull = GPIO_NOPULL;
-        HAL_GPIO_Init(GPIOB, &GPIO_InitStructure);
+        HAL_GPIO_Init(GPIOC, &GPIO_InitStructure);
 
         /* Initialise the ADC */ 
         if(HAL_ADC_Init(&_hadc1) != HAL_OK)
@@ -69,13 +69,13 @@ void pot_init(void)
     }
 }
 
-void pot_deinit(void)
+void ammeter_deinit(void)
 {
     HAL_ADC_DeInit(&_hadc1);
     _is_init = 0;
 }
 
-double pot_get_value(void)
+double ammeter_get_value(void)
 {
     /* Poll the ADC conversion */
     uint16_t result = 0;
@@ -86,5 +86,5 @@ double pot_get_value(void)
         result = HAL_ADC_GetValue(&_hadc1);
     }
 
-    return ((((double) result) * PIN_VMAX) / MAX12BIT) ;
+    return ((((double) result) * PIN_VMAX) / (MAX12BIT * V_PER_C)) ;
 }

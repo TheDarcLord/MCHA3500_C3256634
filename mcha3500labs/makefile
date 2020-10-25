@@ -48,7 +48,8 @@ SRC_STM = \
 	$(SRCDIR)/potentiometer.c \
 	$(SRCDIR)/data_logging.c \
 	$(SRCDIR)/motor.c \
-	$(SRCDIR)/encoder.c 
+	$(SRCDIR)/encoder.c \
+	$(SRCDIR)/ammeter.c 
 	
 # Assembly source files
 A_SRC = \

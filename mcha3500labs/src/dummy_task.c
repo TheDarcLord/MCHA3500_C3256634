@@ -7,6 +7,8 @@
 #include "uart.h"
 #include "motor.h"
 #include "encoder.h"
+#include "ammeter.h"
+#include "potentiometer.h"
 
 static void dummy_task_update(void *arg);
 
@@ -66,7 +68,8 @@ void dummy_task_update(void *arg)
         // TODO: Add print statements for motor and potentiometer
 
         // Non-blocking delay to wait
-        printf("enc %f \n", encoder_get_count());
+        printf("Ammeter %f \n", ammeter_get_value());
+        printf("Potenti %f \n", pot_get_value());
         osDelay(10);
     }
 }

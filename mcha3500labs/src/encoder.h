@@ -6,13 +6,14 @@
 #include "math.h"
 
 
-/* OLD ->
-#define GEARRATIO (102.08f)
-#define CPR (6533.0f)
-NEW -> */
-#define GEARRATIO (102.08f)
-#define CPR (6533.0f)
-#define  M_PI    3.14159265358979323846
+/* 30 ->
+#define GEARRATIO (30.0f)
+#define CPR (1920.0f)
+*/
+/* 19 -> */
+#define GEARRATIO (18.75f)
+#define CPR (1200.0f)           
+#define M_PI    3.14159265358979323846
 
 void    encoder_init(void);
 void    encoder_set_count(int32_t);

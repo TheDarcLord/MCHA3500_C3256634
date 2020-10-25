@@ -15,16 +15,14 @@ void potentiometer_logging_stop(void);
 
 void log_potentiometer(void *argument) {
     UNUSED(argument);
-    const float POT_VMAX = 3.3;
     // TICK = 1m
-    float readPotVoltage = ((pot_get_value() * POT_VMAX) / 4095.0);
     
     /* TODO: 
         Print the sample time and potentiometer voltage to,
         the serial terminal in the format -> 
         [time],[voltage]
     */
-    printf("%f, %f\n", (float) logCount/100.0, readPotVoltage); // Actually want 'Sample Time'
+    printf("%f, %f\n", (float) logCount/100.0, pot_get_value()); // Actually want 'Sample Time'
     logCount ++;
     /* TODO: Increment log count */
 

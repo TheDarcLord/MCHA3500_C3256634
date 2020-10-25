@@ -10,6 +10,7 @@
 #include "dummy_task.h"
 #include "potentiometer.h"
 #include "data_logging.h"
+#include "ammeter.h"
 
 static void SystemClock_Config(void);
 static void Error_Handler(void);
@@ -25,12 +26,13 @@ int main(void)
     // Initialise hardware modules
     uart_init();
 
-    // Initialise task modules
+    // Initialise motor modules
     encoder_init();
     motor_init();
+    ammeter_init();
 
     // TEST ->
-    _motor_set_dutycyle(0.3);
+    //_motor_set_dutycyle(0.3);
 
     pot_init();
     heartbeat_task_init();
