@@ -12,9 +12,11 @@
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_it.h"
 
-
-#define     MAXDUTY (0xFFFF);
-#define     MAXVOLT (12.0f);
+//#define     MAXDUTY (0x000A)        // 10 -> 10 Mhz
+//#define     MAXDUTY (0x0064)        // 100  -> 1 MHz
+//#define     MAXDUTY (0x30D4)        // 12 500 -> 8 kHz
+#define     MAXDUTY (0x2710)        // 10 000 -> 10 kHz
+#define     MAXVOLT (12.1f)
 #define     MOTOR_DIR_FWD   1
 #define     MOTOR_DIR_BCK   2
 #define     MOTOR_DIR_BRK   3

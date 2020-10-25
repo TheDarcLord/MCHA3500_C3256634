@@ -43,7 +43,7 @@ void _motor_pwm_init(void) {
     
     GPIO_InitStructure.Pin      = GPIO_PIN_8;
     GPIO_InitStructure.Mode     = GPIO_MODE_AF_PP;
-    GPIO_InitStructure.Pull     = GPIO_PULLDOWN;
+    GPIO_InitStructure.Pull     = GPIO_NOPULL;
     GPIO_InitStructure.Speed    = GPIO_SPEED_FREQ_HIGH;
     GPIO_InitStructure.Alternate = GPIO_AF1_TIM1;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStructure);
@@ -53,15 +53,14 @@ void _motor_pwm_init(void) {
     _htim1.Instance = TIM1;
     _htim1.Init.Prescaler = 0x0000;
     _htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-    _htim1.Init.Period = 0xFFFF;
+    _htim1.Init.Period = MAXDUTY;
     _htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 
     
-    _sConfigPWM.OCMode = TIM_OCMODE_PWM2;
-    _sConfigPWM.OCIdleState = TIM_OCIDLESTATE_SET;
-    _sConfigPWM.Pulse = 0x0000;     // Value Used to edit PWM?
-    _sConfigPWM.OCPolarity = TIM_OCPOLARITY_LOW;
-    _sConfigPWM.OCFastMode = TIM_OCFAST_ENABLE;
+    _sConfigPWM.OCMode = TIM_OCMODE_PWM1;
+    _sConfigPWM.Pulse = 0;     // Value Used to edit PWM?
+    _sConfigPWM.OCPolarity = TIM_OCPOLARITY_HIGH;
+    _sConfigPWM.OCFastMode = TIM_OCFAST_DISABLE;
 
     HAL_TIM_PWM_Init(&_htim1);
     HAL_TIM_PWM_ConfigChannel(&_htim1, &_sConfigPWM, TIM_CHANNEL_1);
