@@ -9,6 +9,7 @@ static void (*log_function)(void);              // Variable to point to function
 static void log_pointer(void *argument);
 static void log_potentiometer(void *argument);
 static void log_imu_pot(void *argument);
+static void log_imu(void *argument);
 void logging_init(void);
 void data_logging_start(SENSOR X);
 void data_logging_stop(void);
@@ -29,6 +30,9 @@ void data_logging_start(SENSOR X) {
     switch(X) {
         case(POT):
             log_function = &log_potentiometer;
+        break;
+        case(IMU):
+            log_function = &log_imu;
         break;
         case(IMU_POT):
             log_function = &log_imu_pot;
@@ -64,6 +68,11 @@ static void log_potentiometer(void *argument) {
     if(logCount > 200) {
         data_logging_stop();
     }
+}
+
+static void log_imu(void *argument) {
+    IMU_read();
+    printf("Angle(deg): %f Acc(y): %f \n", get_angle(0), get_gyroY());
 }
 
 static void log_imu_pot(void *argument) {

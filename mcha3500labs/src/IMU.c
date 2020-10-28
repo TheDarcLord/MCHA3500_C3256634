@@ -23,6 +23,7 @@ void IMU_read(void);
 float get_accY(void);
 float get_accZ(void);
 float get_gyroX(void);
+float get_gyroY(void);
 float get_angle(int form);
 
 void IMU_init(void) {
@@ -77,6 +78,18 @@ float get_accZ(void) {
     }
 }
 
+float get_accX(void) {
+    float data = (float) MPU_6050.Accelerometer_X;
+    if(data > -9.5) {
+        return (float) data * (ACC_8G/(RANGE - MIDPNT));
+    } else if(data < -9.5) {
+        return (float) data * (ACC_8G/(RANGE + MIDPNT));
+    } else {
+        // Not Possible but clears up compiler errors
+        return (float) 0.0;
+    }
+}
+
 float get_gyroX(void) {
     float data = (float) MPU_6050.Gyroscope_X;
     if(data > -9.5) {
@@ -91,13 +104,30 @@ float get_gyroX(void) {
    //return(data);
 }
 
+float get_gyroY(void) {
+    float data = (float) MPU_6050.Gyroscope_Y;
+    if(data > -9.5) {
+        return (float) data * (GYR_MX/(RANGE - MIDPNT)) * (M_PI / 180.0);
+    } else if(data < -9.5) {
+        return (float) data * (GYR_MX/(RANGE + MIDPNT)) * (M_PI / 180.0);
+    } else {
+        // Not Possible but clears up compiler errors
+        return (float) 0.0;
+    }
+
+   //return(data);
+}
+
+
 float get_angle(int form) {
     switch(form) {
         case 0:
-            return (-1 * atan2(get_accZ(),get_accY()) * (180.0 / M_PI) );
+            // Degrees
+            return (-1 * atan2(get_accZ(), (-1 * get_accX())) * (180.0 / M_PI) );
         break;
         default:
-            return (-1 * atan2(get_accZ(),get_accY()));
+            // Radians
+            return (-1 * atan2(get_accZ(),(-1 * get_accX())));
         break;
     }
 }

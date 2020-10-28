@@ -25,6 +25,7 @@ static void _reset(int, char *[]);
 static void _cmd_getPotentiometerVoltage(int, char *[]);
 static void _cmd_logPotentiometerVoltage(int, char *[]);
 static void _cmd_logIMUpot(int argc, char *argv[]);
+static void _cmd_logIMU(int argc, char *argv[]);
 // Modules that provide commands
 #include "heartbeat_cmd.h"
 
@@ -35,7 +36,8 @@ static CMD_T cmd_table[] =
     {_reset                         , "reset"       , ""                          , "Restarts the system."                              } ,
     {_cmd_getPotentiometerVoltage   , "getPot"      , ""                          , "Displays Potentiometer voltage level"              } ,
     {_cmd_logPotentiometerVoltage   , "logPot"      , ""                          , "Logs Potentiometer voltage level for 2 sec"        } , 
-    {_cmd_logIMUpot                 , "logIMUPot"   , ""                          , "Logs IMU & Potentiometer voltage level for 5 sec"  } , 
+    {_cmd_logIMUpot                 , "logIMUPot"   , ""                          , "Logs IMU & Potentiometer voltage level for 5 sec"  } ,
+    {_cmd_logIMU                    , "logIMU"      , ""                          , "Logs IMU"                                          } ,
     {heartbeat_cmd                  , "heartbeat"   , "[start|stop]"              , "Get status or start/stop heartbeat task"           } ,
 };
 enum {CMD_TABLE_SIZE = sizeof(cmd_table)/sizeof(CMD_T)};
@@ -71,6 +73,15 @@ void _cmd_logIMUpot(int argc, char *argv[])
     UNUSED(argc);
     data_logging_start(IMU_POT);
 }
+
+
+void _cmd_logIMU(int argc, char *argv[])
+{
+    UNUSED(argv);
+    UNUSED(argc);
+    data_logging_start(IMU);
+}
+
 
 void _help(int argc, char *argv[])
 {

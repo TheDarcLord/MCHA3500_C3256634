@@ -15,7 +15,8 @@
 
 typedef enum {
     POT     = 0,
-    IMU_POT = 1
+    IMU_POT = 1,
+    IMU     = 2
 } SENSOR;
 
 void logging_init(void);
