@@ -23,7 +23,10 @@ typedef struct
 static void _help(int, char *[]);
 static void _reset(int, char *[]);
 static void _cmd_getPotentiometerVoltage(int, char *[]);
-static void _cmd_logPotentiometerVoltage(int, char *[]) ;
+static void _cmd_logPotentiometerVoltage(int, char *[]);
+static void _cmd_setControlState(int argc, char *argv[]);
+static void _cmd_getControl(int argc, char *argv[]);
+
 // Modules that provide commands
 #include "heartbeat_cmd.h"
 
@@ -34,8 +37,11 @@ static CMD_T cmd_table[] =
     {_reset                         , "reset"       , ""                          , "Restarts the system."                      } ,
     {_cmd_getPotentiometerVoltage   , "getPot"      , ""                          , "Displays Potentiometer voltage level"      } ,
     {_cmd_logPotentiometerVoltage   , "logPot"      , ""                          , "Logs Potentiometer voltage level for 2 sec"} , 
-    {heartbeat_cmd                  , "heartbeat"   , "[start|stop]"              , "Get status or start/stop heartbeat task"   } ,
+    {heartbeat_cmd                  , "heartbeat"   , ""                          , "Get status or start/stop heartbeat task"   } ,
+    {_cmd_setControlState           , "setControl"  , ""                          , "Get status or start/stop heartbeat task"   } ,
+    {_cmd_getControl                , "getControl"  , ""                          , "Get status or start/stop heartbeat task"   }
 };
+
 enum {CMD_TABLE_SIZE = sizeof(cmd_table)/sizeof(CMD_T)};
 enum {CMD_MAX_TOKENS = 5};      // Maximum number of tokens to process (command + arguments)
 
@@ -210,4 +216,34 @@ int _makeargv(char *s, char *argv[], int argvsize)
     return argc;
 }
 
+static void _cmd_getControl(int argc, char *argv[]){
+    /* Supress compiler warnings for unused arguments */
+    UNUSED(argc);
+    UNUSED(argv);
+    /* Update controller */
+    ctrl_update();
+    /* Print control action */
+    printf("%f\n", getControl());
+}
 
+static void _cmd_setControlState(int argc, char *argv[])
+{
+    // Check for correct input arguments
+    
+    if(argc != 3) {
+        printf("Incorrect arguments\n");
+    } else {
+        switch(atoi(argv[1])) {
+            // Set controller state
+            case 1:
+                ctrl_set_x1h(atof(argv[2]));
+            break;
+            case 2:
+                ctrl_set_x2h(atof(argv[2]));
+            break;
+            case 3:
+                ctrl_set_x3h(atof(argv[2]));
+            break;
+        }       
+    }
+}
