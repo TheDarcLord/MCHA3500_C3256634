@@ -7,18 +7,21 @@
 /* Defining sutiable matrix variables for: 
  * https://www.keil.com/pack/doc/CMSIS/DSP/html/group__groupMatrix.html
  * | θ | - Pendulum Angle            -> MPU Acc         0
- * | x'| - Cart Velocity                                1
+ * | ϕ'| - Wheel Velocity            -> Encoder         1
  * | θ'| - Pendulum Angular Velocity -> MPU Gyro        2
  * | z | - Error State of the Integrator                3
  * 
  * Define control matrix values */
 static float ctrl_mK_f32[CTRL_N_INPUT * CTRL_N_STATE] = {
     /* negative K, 1x4 */
-    43.9434,  9.1494,  6.8254,  0.9429
+    19.2292,  2.4126,  6.8915,  0.9333
 };
 static float ctrl_xHat_f32[CTRL_N_STATE] = {
     /* estimate of state, 4x1 */
-    0.0, 0.0, 0.0, 0.0
+    0.0,    //  θ
+    0.0,    //  ϕ'
+    0.0,    //  θ'
+    0.0     //  z
 };
 static float ctrl_u_f32[CTRL_N_INPUT] = {
     /* control action, 1x1 */
