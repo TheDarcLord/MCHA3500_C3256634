@@ -77,49 +77,41 @@ void _motor_gpio_init(void) {
     GPIO_InitStructure.Pull     = GPIO_PULLUP;
     GPIO_InitStructure.Speed    = GPIO_SPEED_FREQ_HIGH;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStructure);
-    _motor_set_direction(MOTOR_DIR_BRK);
+    _motor_set_direction(BRK);
 }
 
 void _motor_set_direction(uint8_t dir)
 {
-    if(dir == MOTOR_DIR_FWD) {
-        HAL_GPIO_WritePin(GPIOB,GPIO_PIN_5,GPIO_PIN_SET);
-        HAL_GPIO_WritePin(GPIOB,GPIO_PIN_4,GPIO_PIN_RESET);
-    } else if(dir == MOTOR_DIR_BCK) {
-        HAL_GPIO_WritePin(GPIOB,GPIO_PIN_5,GPIO_PIN_RESET);
-        HAL_GPIO_WritePin(GPIOB,GPIO_PIN_4,GPIO_PIN_SET);
-    } else {
-        HAL_GPIO_WritePin(GPIOB,GPIO_PIN_5,GPIO_PIN_RESET);
-        HAL_GPIO_WritePin(GPIOB,GPIO_PIN_4,GPIO_PIN_RESET);
+    switch(dir) {
+        case FWD: // Forward
+            HAL_GPIO_WritePin(GPIOB,GPIO_PIN_5,GPIO_PIN_SET);
+            HAL_GPIO_WritePin(GPIOB,GPIO_PIN_4,GPIO_PIN_RESET);
+        break;
+        case BCK: // Backward
+            HAL_GPIO_WritePin(GPIOB,GPIO_PIN_5,GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(GPIOB,GPIO_PIN_4,GPIO_PIN_SET);
+        break;
+        case BRK: // Brake
+            HAL_GPIO_WritePin(GPIOB,GPIO_PIN_5,GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(GPIOB,GPIO_PIN_4,GPIO_PIN_RESET);
+        break;
     }
 }
 
-uint16_t _motor_set_dutycyle(float percent) {
-    if(percent < 0) {
-        percent = percent * -1;
-        _motor_set_direction(MOTOR_DIR_BCK);
-    } else if(percent > 0) {
-        _motor_set_direction(MOTOR_DIR_FWD);
+uint16_t motor_set_voltage(float voltage) {
+    /* Voltage = %DC * MAXVOLTAGE
+     * DC = Voltage/MAXVOLTAGE
+     */
+    float percent = fabs(voltage / MAXVOLT);
+    printf("ABS float = %f", percent);
+    if(voltage > 0) {
+        _motor_set_direction(FWD);
+    } else if(voltage < 0) {
+        _motor_set_direction(BCK);
     } else {
-        _motor_set_direction(MOTOR_DIR_BRK);
+        _motor_set_direction(BRK);
     }
-    
     uint16_t dutyCycle = percent * MAXDUTY;
     __HAL_TIM_SET_COMPARE(&_htim1, TIM_CHANNEL_1, dutyCycle);
     return(dutyCycle);
-}
-
-void motor_set(float voltage) {
-    float p = voltage / MAXVOLT;
-
-    if(p < 0) {
-        p = p * -1;
-        _motor_set_direction(MOTOR_DIR_BCK);
-    } else if(p > 0) {
-        _motor_set_direction(MOTOR_DIR_FWD);
-    } else {
-        _motor_set_direction(MOTOR_DIR_BRK);
-    }
-    uint16_t dutyCycle = p * MAXDUTY;
-    __HAL_TIM_SET_COMPARE(&_htim1, TIM_CHANNEL_1, dutyCycle);
 }

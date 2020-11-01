@@ -1,31 +1,12 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <string.h>
-#include <inttypes.h>           // For PRIxx and SCNxx macros
-#include "stm32f4xx_hal.h"      // to import UNUSED() macro
-#include "cmd_line_buffer.h"
 #include "cmd_parser.h"
-#include "potentiometer.h"
-#include "data_logging.h"
-
-
-// Type for each command table entry
-typedef struct
-{
-    void (*func)(int argc, char *argv[]);   // Command function pointer
-    const char * cmd;                       // Command name
-    const char * args;                      // Command arguments syntax
-    const char * help;                      // Command description
-} CMD_T;
 
 // Forward declaration for built-in commands
 static void _help(int, char *[]);
 static void _reset(int, char *[]);
 static void _cmd_getPotentiometerVoltage(int, char *[]);
-static void _cmd_logPotentiometerVoltage(int, char *[]) ;
-// Modules that provide commands
-#include "heartbeat_cmd.h"
+static void _cmd_logPotentiometerVoltage(int, char *[]);
+static void _cmd_setMotorVoltage(int, char *[]);
+static void _cmd_getCurrent(int, char *[]);
 
 // Command table
 static CMD_T cmd_table[] =
@@ -35,6 +16,8 @@ static CMD_T cmd_table[] =
     {_cmd_getPotentiometerVoltage   , "getPot"      , ""                          , "Displays Potentiometer voltage level"      } ,
     {_cmd_logPotentiometerVoltage   , "logPot"      , ""                          , "Logs Potentiometer voltage level for 2 sec"} , 
     {heartbeat_cmd                  , "heartbeat"   , "[start|stop]"              , "Get status or start/stop heartbeat task"   } ,
+    {_cmd_setMotorVoltage           , "setVoltage"  , ""                          , "Set Voltage of Motor (+-12V)"},
+    {_cmd_getCurrent                , "getCurrent"  , ""                          , "Get the armature Current"}
 };
 enum {CMD_TABLE_SIZE = sizeof(cmd_table)/sizeof(CMD_T)};
 enum {CMD_MAX_TOKENS = 5};      // Maximum number of tokens to process (command + arguments)
@@ -42,8 +25,28 @@ enum {CMD_MAX_TOKENS = 5};      // Maximum number of tokens to process (command 
 // Command function definitions
 static void _print_chip_pinout(void);
 
-void _cmd_getPotentiometerVoltage(int argc, char *argv[]) 
-{
+
+void _cmd_setMotorVoltage(int argc, char *argv[]) {
+    if(argc < 2) {
+        printf("Invalid number of arguments");
+    } else {
+        motor_set_voltage(atof(argv[1]));
+    }
+}
+
+void _cmd_getCurrent(int argc, char *argv[]) {
+    printf("%f\n", ammeter_get_value());
+    UNUSED(argv);
+    UNUSED(argc);    
+}
+/*
+void _cmd_getOmegaA(int argc, char *argv[]) {
+
+}
+*/
+
+
+void _cmd_getPotentiometerVoltage(int argc, char *argv[]) {
     UNUSED(argv);
     
     const float POT_VMAX = 3.3;
@@ -178,7 +181,6 @@ void cmd_parse(char * cmd)
 }
 
 // Command tokeniser
-
 int _makeargv(char *s, char *argv[], int argvsize)
 {
     char *p = s;
@@ -209,5 +211,3 @@ int _makeargv(char *s, char *argv[], int argvsize)
 
     return argc;
 }
-
-

@@ -66,10 +66,10 @@ void dummy_task_update(void *arg)
         //float POS = encoder_get_count();
         //printf("Encoder: %f \n", POS);
         // TODO: Add print statements for motor and potentiometer
-        _motor_set_dutycyle(0.16);
+        //motor_set_voltage(6.0);
 
         // Non-blocking delay to wait
-        printf("Ammeter %f \n", ammeter_get_value());
+        
         //printf("Potenti %f \n", pot_get_value());
         osDelay(10);
     }
