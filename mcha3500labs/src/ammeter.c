@@ -3,6 +3,7 @@
 ADC_HandleTypeDef _hadc1;
 
 static uint8_t _is_init = 0;
+float direction = 1.0;
 
 void ammeter_init(void)
 {
@@ -75,7 +76,7 @@ void ammeter_deinit(void)
     _is_init = 0;
 }
 
-double ammeter_get_value(void)
+float ammeter_get_value(void)
 {
     /* Poll the ADC conversion */
     uint16_t result = 0;
@@ -86,5 +87,14 @@ double ammeter_get_value(void)
         result = HAL_ADC_GetValue(&_hadc1);
     }
 
-    return ((((double) result) * PIN_VMAX) / (MAX12BIT * V_PER_C)) ;
+
+    return ((((float) result) * PIN_VMAX * direction) / (MAX12BIT * V_PER_C)) ;
+}
+
+void set_direction(float volt) {
+    if(volt > 0) {
+        direction = 1.0;
+    } else {
+        direction = -1.0;
+    }
 }

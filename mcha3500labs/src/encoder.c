@@ -11,8 +11,6 @@ float position = 0;
 /* ENCODER ->
  * PC3 -> Yellow, ENCA
  * PC2 -> White, ENCB			
- * Gear Rato: 102.08
- * Counts Per Revolution: 6533
 */
 
 
@@ -69,7 +67,7 @@ void encoder_edge_B_isr(void)
     // Implement B edge logic to increment or decrement _count
 	int A = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_3);
 	int B = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_2);
-
+	
 	if(A == B) {
 		_count--;
 	} else {
@@ -80,30 +78,22 @@ void encoder_edge_B_isr(void)
 void encoder_set_count(int32_t count)
 {
     // Atomically set _count
-    _encoder_disable_interrupts();
+    //_encoder_disable_interrupts();
     _count = count;
-    _encoder_enable_interrupts();
+    //_encoder_enable_interrupts();
 }
 
-float encoder_get_count(void)
-{
+float encoder_get_count(void) {
     // Automically read _count
-    _encoder_disable_interrupts();
-    uint32_t count = _count;
-    _encoder_enable_interrupts();
+    int32_t count = _count;
     return countToRadians(count);
 }
 
-float encoder_pop_count(void)
-{
+float encoder_pop_count(void) {
     // Automically read and reset _count
-    _encoder_disable_interrupts();
     int32_t count = _count;
 	_count = 0;
-    _encoder_enable_interrupts();
-	return(count);
-    
-	//return countToRadians(count);
+	return countToOmega(count);
 }
 
 void _encoder_enable_interrupts(void)
@@ -137,6 +127,11 @@ void EXTI2_IRQHandler(void)
 }
 
 float countToRadians(int32_t c) {
-	position = (2 * M_PI * c/CPR) * (180 / M_PI);
+	position = (2 * M_PI * c/CPR); // * (180 / M_PI); // DEGREES
 	return(position);
+}
+
+float countToOmega(int32_t c) {
+	float omega = (2 * M_PI * c/CPR) / 0.01; // * (180 / M_PI); // DEGREES
+	return(omega);
 }

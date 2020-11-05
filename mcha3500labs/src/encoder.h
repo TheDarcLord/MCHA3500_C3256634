@@ -10,9 +10,12 @@
 #define GEARRATIO (30.0f)
 #define CPR (1920.0f)
 */
-/* 19 -> */
+/* 19 -> 
 #define GEARRATIO (18.75f)
-#define CPR (1200.0f)           
+#define CPR (1200.0f)
+*/      
+#define GEARRATIO (18.75f)
+#define CPR (64.0f)
 #define M_PI    3.14159265358979323846
 
 void    encoder_init(void);
@@ -21,6 +24,7 @@ float   encoder_get_count(void);
 float   encoder_pop_count(void);
 void    encoder_edge_A_isr(void);
 void    encoder_edge_B_isr(void);
-float   countToRadians(int32_t c);
+float   countToRadians(int32_t);
+float   countToOmega(int32_t);
 
 #endif

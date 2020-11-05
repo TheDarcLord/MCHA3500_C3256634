@@ -103,11 +103,12 @@ uint16_t motor_set_voltage(float voltage) {
      * DC = Voltage/MAXVOLTAGE
      */
     float percent = fabs(voltage / MAXVOLT);
-    printf("ABS float = %f", percent);
+    set_direction(voltage);
     if(voltage > 0) {
         _motor_set_direction(FWD);
     } else if(voltage < 0) {
         _motor_set_direction(BCK);
+
     } else {
         _motor_set_direction(BRK);
     }

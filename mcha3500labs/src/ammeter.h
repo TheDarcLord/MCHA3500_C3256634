@@ -11,10 +11,10 @@
 #define V_PER_C (140e-3)
 
 
-double  ammeter_get_value(void);
+float   ammeter_get_value(void);
 void    ammeter_deinit(void);
 void    ammeter_init(void);
-
+void    set_direction(float);
 /* 140mV per Amp 
  * -> PC4 - CHANNEL 14 ! -> ADC12_IN14
  * -> ADC 1 or 2 ... IN channel 14

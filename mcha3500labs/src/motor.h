@@ -11,6 +11,7 @@
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_gpio_ex.h"
 #include "stm32f4xx_it.h"
+#include "ammeter.h"
 //#include "stm32f4xx_hal_adc.h"
 
 //#define     MAXDUTY (0x000A)        // 10 -> 10 Mhz

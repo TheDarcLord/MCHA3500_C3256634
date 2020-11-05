@@ -7,6 +7,7 @@ static void _cmd_getPotentiometerVoltage(int, char *[]);
 static void _cmd_logPotentiometerVoltage(int, char *[]);
 static void _cmd_setMotorVoltage(int, char *[]);
 static void _cmd_getCurrent(int, char *[]);
+static void _cmd_getOmegaA(int, char *[]);
 
 // Command table
 static CMD_T cmd_table[] =
@@ -17,7 +18,8 @@ static CMD_T cmd_table[] =
     {_cmd_logPotentiometerVoltage   , "logPot"      , ""                          , "Logs Potentiometer voltage level for 2 sec"} , 
     {heartbeat_cmd                  , "heartbeat"   , "[start|stop]"              , "Get status or start/stop heartbeat task"   } ,
     {_cmd_setMotorVoltage           , "setVoltage"  , ""                          , "Set Voltage of Motor (+-12V)"},
-    {_cmd_getCurrent                , "getCurrent"  , ""                          , "Get the armature Current"}
+    {_cmd_getCurrent                , "getCurrent"  , ""                          , "Get the armature Current"},
+    {_cmd_getOmegaA                 , "getOmegaA"   , ""                          , "Get the armature Postion/sec"}
 };
 enum {CMD_TABLE_SIZE = sizeof(cmd_table)/sizeof(CMD_T)};
 enum {CMD_MAX_TOKENS = 5};      // Maximum number of tokens to process (command + arguments)
@@ -35,15 +37,17 @@ void _cmd_setMotorVoltage(int argc, char *argv[]) {
 }
 
 void _cmd_getCurrent(int argc, char *argv[]) {
-    printf("%f\n", ammeter_get_value());
     UNUSED(argv);
-    UNUSED(argc);    
+    UNUSED(argc); 
+    printf("%f\n", ammeter_get_value());
 }
-/*
-void _cmd_getOmegaA(int argc, char *argv[]) {
 
+void _cmd_getOmegaA(int argc, char *argv[]) {
+    UNUSED(argv);
+    UNUSED(argc);
+    printf("%f\n", encoder_pop_count());
 }
-*/
+
 
 
 void _cmd_getPotentiometerVoltage(int argc, char *argv[]) {
