@@ -8,18 +8,28 @@ static void _cmd_logPotentiometerVoltage(int, char *[]);
 static void _cmd_setMotorVoltage(int, char *[]);
 static void _cmd_getCurrent(int, char *[]);
 static void _cmd_getOmegaA(int, char *[]);
+static void _cmd_getTheta(int, char *[]);
+static void _cmd_getRawEnc(int, char *[]);
+static void _cmd_logIMUpot(int argc, char *argv[]);
+static void _cmd_logIMU(int argc, char *argv[]);
+// Modules that provide commands
+#include "heartbeat_cmd.h"
 
 // Command table
 static CMD_T cmd_table[] =
 {
-    {_help                          , "help"        , ""                          , "Displays this help message"                } ,
-    {_reset                         , "reset"       , ""                          , "Restarts the system."                      } ,
-    {_cmd_getPotentiometerVoltage   , "getPot"      , ""                          , "Displays Potentiometer voltage level"      } ,
-    {_cmd_logPotentiometerVoltage   , "logPot"      , ""                          , "Logs Potentiometer voltage level for 2 sec"} , 
-    {heartbeat_cmd                  , "heartbeat"   , "[start|stop]"              , "Get status or start/stop heartbeat task"   } ,
-    {_cmd_setMotorVoltage           , "setVoltage"  , ""                          , "Set Voltage of Motor (+-12V)"},
-    {_cmd_getCurrent                , "getCurrent"  , ""                          , "Get the armature Current"},
-    {_cmd_getOmegaA                 , "getOmegaA"   , ""                          , "Get the armature Postion/sec"}
+    {_help                          , "help"        , ""                          , "Displays this help message"                        },
+    {_reset                         , "reset"       , ""                          , "Restarts the system."                              },
+    {_cmd_getPotentiometerVoltage   , "getPot"      , ""                          , "Displays Potentiometer voltage level"              },
+    {_cmd_logPotentiometerVoltage   , "logPot"      , ""                          , "Logs Potentiometer voltage level for 2 sec"        }, 
+    {heartbeat_cmd                  , "heartbeat"   , "[start|stop]"              , "Get status or start/stop heartbeat task"           },
+    {_cmd_setMotorVoltage           , "setVoltage"  , ""                          , "Set Voltage of Motor (+-12V)"                      },
+    {_cmd_getCurrent                , "getCurrent"  , ""                          , "Get the armature Current"                          },
+    {_cmd_getOmegaA                 , "getOmegaA"   , ""                          , "Get the armature Postion/sec"                      },
+    {_cmd_getTheta                  , "getTheta"    , ""                          , "Get the armature Postion"                      },
+    {_cmd_getRawEnc                 , "getRaw"    , ""                            , "Get the armature Encoder Value"                      },
+    {_cmd_logIMUpot                 , "logIMUPot"   , ""                          , "Logs IMU & Potentiometer voltage level for 5 sec"  },
+    {_cmd_logIMU                    , "logIMU"      , ""                          , "Logs IMU"                                          },
 };
 enum {CMD_TABLE_SIZE = sizeof(cmd_table)/sizeof(CMD_T)};
 enum {CMD_MAX_TOKENS = 5};      // Maximum number of tokens to process (command + arguments)
@@ -48,16 +58,26 @@ void _cmd_getOmegaA(int argc, char *argv[]) {
     printf("%f\n", encoder_pop_count());
 }
 
+void _cmd_getTheta(int argc, char *argv[]) {
+    UNUSED(argv);
+    UNUSED(argc); 
+    printf("%f\n", encoder_get_count());
+}
+
+void _cmd_getRawEnc(int argc, char *argv[]) {
+    UNUSED(argv);
+    UNUSED(argc); 
+    printf("%ld\n", encoder_get_raw());
+}
+
 
 
 void _cmd_getPotentiometerVoltage(int argc, char *argv[]) {
     UNUSED(argv);
-    
-    const float POT_VMAX = 3.3;
 
     if (argc <= 1)
     {
-        printf("Potentiometer ADC Voltage is %f V \n", ((pot_get_value() * POT_VMAX) / 4095.0));
+        printf("Potentiometer ADC Voltage is %f V \n", get_pot_voltage());
     }
     else
     {
@@ -69,8 +89,24 @@ void _cmd_logPotentiometerVoltage(int argc, char *argv[])
 {
     UNUSED(argv);
     UNUSED(argc);
-    potentiometer_logging_start();
+    data_logging_start(POT);
 }
+
+void _cmd_logIMUpot(int argc, char *argv[]) 
+{
+    UNUSED(argv);
+    UNUSED(argc);
+    data_logging_start(IMU_POT);
+}
+
+
+void _cmd_logIMU(int argc, char *argv[])
+{
+    UNUSED(argv);
+    UNUSED(argc);
+    data_logging_start(IMU);
+}
+
 
 void _help(int argc, char *argv[])
 {

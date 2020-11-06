@@ -2,10 +2,11 @@
 
 ADC_HandleTypeDef _hadc1;
 
+const float POT_VMAX = 3.3;
+const float BIT12MAX = 4095.0;
 static uint8_t _is_init = 0;
 
-void pot_init(void)
-{
+void pot_init(void) {
     if (!_is_init)
     {
         /* Configure ADC1 instance to be initialised with:
@@ -75,7 +76,7 @@ void pot_deinit(void)
     _is_init = 0;
 }
 
-double pot_get_value(void)
+uint16_t pot_get_value(void)
 {
     /* Poll the ADC conversion */
     uint16_t result = 0;
@@ -86,5 +87,9 @@ double pot_get_value(void)
         result = HAL_ADC_GetValue(&_hadc1);
     }
 
-    return ((((double) result) * PIN_VMAX) / MAX12BIT) ;
+    return result;
+}
+
+float get_pot_voltage(void) {
+    return (float) ((pot_get_value() * POT_VMAX) / BIT12MAX);
 }

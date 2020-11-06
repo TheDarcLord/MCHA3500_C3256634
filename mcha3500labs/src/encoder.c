@@ -83,6 +83,10 @@ void encoder_set_count(int32_t count)
     //_encoder_enable_interrupts();
 }
 
+int32_t encoder_get_raw(void) {
+    return _count;
+}
+
 float encoder_get_count(void) {
     // Automically read _count
     int32_t count = _count;

@@ -4,6 +4,7 @@
 
 #include "motor.h"
 #include "encoder.h"
+#include "IMU.h"
 #include "uart.h"
 #include "cmd_task.h"
 #include "heartbeat_task.h"
@@ -37,7 +38,9 @@ int main(void)
     //pot_init();
     heartbeat_task_init();
     cmd_task_init();
+    IMU_init();
     dummy_task_init();
+    dummy_task_start();
     logging_init();
     
     // Start scheduler

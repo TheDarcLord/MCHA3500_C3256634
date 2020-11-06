@@ -51,11 +51,14 @@ SRC_STM = \
 	$(SRCDIR)/motor.c \
 	$(SRCDIR)/encoder.c \
 	$(SRCDIR)/ammeter.c \
+	$(SRCDIR)/IMU.c \
 
 SRC_MPU6050LIB = \
 	$(MPU6050LIB_ROOT)/tm_stm32_gpio.c \
 	$(MPU6050LIB_ROOT)/tm_stm32_i2c.c \
-	$(MPU6050LIB_ROOT)/tm_stm32_mpu6050.c
+	$(MPU6050LIB_ROOT)/tm_stm32_mpu6050.c \
+
+
 	
 # Assembly source files
 A_SRC = \

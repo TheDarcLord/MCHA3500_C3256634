@@ -61,8 +61,7 @@ uint8_t dummy_task_is_running(void)
 void dummy_task_update(void *arg)
 {
     UNUSED(arg);
-    while(1)
-    {
+    while(1) {
         //float POS = encoder_get_count();
         //printf("Encoder: %f \n", POS);
         // TODO: Add print statements for motor and potentiometer
@@ -72,6 +71,14 @@ void dummy_task_update(void *arg)
         
         //printf("Potenti %f \n", pot_get_value());
         osDelay(10);
+        /*
+        IMU_read();
+        //float Z = get_accZ();
+        float X = get_gyroX();
+        float theta = get_angle(0);
+        printf("MPU-X \nAngle: %f \nVelocity: %f \n", theta, X);
+        osDelay(1000);
+        */
     }
 }
 
