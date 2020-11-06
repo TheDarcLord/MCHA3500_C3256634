@@ -11,14 +11,19 @@
 #include <stdint.h>
 #include "math.h"
 
-void IMU_init(void);
+typedef enum {
+    RADIANS = 0,
+    DEGREES = 1
+} FORM;
+
 void IMU_read(void);
+void IMU_init(void);
 float get_accY(void);
 float get_accZ(void);
 float get_accX(void);
 float get_gyroX(void);
 float get_gyroY(void);
-float get_angle(int form);
+float get_angle(FORM form);
 
 #endif
 

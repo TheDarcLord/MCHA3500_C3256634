@@ -17,14 +17,8 @@ TM_MPU6050_t MPU_6050;          // Data Struct -> Holds X, Y & Z etc.
     int16_t 	Gyroscope_Z
     float 	    Temperature
 */
+
 static uint8_t _is_init = 0;
-void IMU_init(void);
-void IMU_read(void);
-float get_accY(void);
-float get_accZ(void);
-float get_gyroX(void);
-float get_gyroY(void);
-float get_angle(int form);
 
 void IMU_init(void) {
     /* Initialise IMU with AD0 LOW, acceleration sensitivity +-4g, gyroscope +-250 deg/s */
@@ -119,15 +113,18 @@ float get_gyroY(void) {
 }
 
 
-float get_angle(int form) {
+float get_angle(FORM form) {
     switch(form) {
-        case 0:
+        case DEGREES:
             // Degrees
             return (-1 * atan2(get_accZ(), (-1 * get_accX())) * (180.0 / M_PI) );
         break;
-        case 1:
+        case RADIANS:
             // Radians
             return (-1 * atan2(get_accZ(),(-1 * get_accX())));
+        break;
+        default:
+            return -404.0;
         break;
     }
 }

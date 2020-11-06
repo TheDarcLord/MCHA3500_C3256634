@@ -55,7 +55,8 @@ void data_logging_stop(void) {
 
 /* LOGGING EACH SENSOR ELEMENT */
 static void log_potentiometer(void *argument) {
-    UNUSED(argument);   // TICK = 1ms
+    UNUSED(argument);
+    // TICK = 1ms
     /* 
         Print the sample time and potentiometer voltage to,
         the serial terminal in the format -> 
@@ -72,6 +73,7 @@ static void log_potentiometer(void *argument) {
 }
 
 static void log_imu(void *argument) {
+    UNUSED(argument);
     IMU_read();
     printf("Angle(deg): %f Velo(y): %f \n", get_angle(0), get_gyroY());
 }
