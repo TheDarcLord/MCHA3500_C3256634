@@ -98,7 +98,7 @@ float get_gyroX(void) {
    //return(data);
 }
 
-float get_gyroY(void) {
+float get_gyroY(void) {     // Velocity about Y - CL4P
     float data = (float) MPU_6050.Gyroscope_Y;
     if(data > -9.5) {
         return (float) data * (GYR_MX/(RANGE - MIDPNT)) * (M_PI / 180.0);

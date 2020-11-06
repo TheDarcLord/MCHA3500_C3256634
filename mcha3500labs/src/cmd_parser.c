@@ -8,6 +8,7 @@ static void _cmd_logPotentiometerVoltage(int, char *[]);
 static void _cmd_setMotorVoltage(int, char *[]);
 static void _cmd_getCurrent(int, char *[]);
 static void _cmd_getOmegaA(int, char *[]);
+static void _cmd_getOmega(int, char *[]);
 static void _cmd_getTheta(int, char *[]);
 static void _cmd_getRawEnc(int, char *[]);
 static void _cmd_logIMUpot(int argc, char *argv[]);
@@ -25,12 +26,14 @@ static CMD_T cmd_table[] =
     {heartbeat_cmd                  , "heartbeat"   , "[start|stop]"              , "Get status or start/stop heartbeat task"           },
     {_cmd_setMotorVoltage           , "setVoltage"  , ""                          , "Set Voltage of Motor (+-12V)"                      },
     {_cmd_getCurrent                , "getCurrent"  , ""                          , "Get the armature Current"                          },
-    {_cmd_getOmegaA                 , "getOmegaA"   , ""                          , "Get the armature Postion/sec"                      },
-    {_cmd_getTheta                  , "getTheta"    , ""                          , "Get the armature Postion"                      },
-    {_cmd_getRawEnc                 , "getRaw"    , ""                            , "Get the armature Encoder Value"                      },
+    {_cmd_getOmegaA                 , "getOmegaA"   , ""                          , "Get the armature Postion/sec"                      },             
+    {_cmd_getRawEnc                 , "getRaw"    , ""                            , "Get the armature Encoder Value"                    },
     {_cmd_logIMUpot                 , "logIMUPot"   , ""                          , "Logs IMU & Potentiometer voltage level for 5 sec"  },
     {_cmd_logIMU                    , "logIMU"      , ""                          , "Logs IMU"                                          },
+    {_cmd_getOmega                  , "getOmega"   , ""                           , "Get the Chassis Position/sec"                      },
+    {_cmd_getTheta                  , "getTheta"   , ""                           , "Get the Chassis Postion"                           }
 };
+
 enum {CMD_TABLE_SIZE = sizeof(cmd_table)/sizeof(CMD_T)};
 enum {CMD_MAX_TOKENS = 5};      // Maximum number of tokens to process (command + arguments)
 
@@ -60,8 +63,16 @@ void _cmd_getOmegaA(int argc, char *argv[]) {
 
 void _cmd_getTheta(int argc, char *argv[]) {
     UNUSED(argv);
+    UNUSED(argc);
+    IMU_read();
+    printf("%f\n", get_angle(RADIANS));
+}
+
+void _cmd_getOmega(int argc, char *argv[]) {
+    UNUSED(argv);
     UNUSED(argc); 
-    printf("%f\n", encoder_get_count());
+    IMU_read();
+    printf("%f\n", get_gyroY());
 }
 
 void _cmd_getRawEnc(int argc, char *argv[]) {
@@ -69,8 +80,6 @@ void _cmd_getRawEnc(int argc, char *argv[]) {
     UNUSED(argc); 
     printf("%ld\n", encoder_get_raw());
 }
-
-
 
 void _cmd_getPotentiometerVoltage(int argc, char *argv[]) {
     UNUSED(argv);
