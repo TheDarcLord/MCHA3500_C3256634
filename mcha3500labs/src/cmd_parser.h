@@ -14,6 +14,7 @@
 #include "encoder.h"
 #include "ammeter.h"
 #include "heartbeat_cmd.h"
+#include "kalman.h"
 
 void cmd_parse(char *);
 

@@ -15,7 +15,12 @@
 #define  La (float) 0.4000
 #define  Kw (float) 0.0055
 
+void initKF(void);
 void runKF(void);
+float getFilteredAngle(void);
+float getFilteredOmega(void);
+float getFilteredCurrent(void);
+
 /* Sensor Fusion!>?
  * MODEL:
  * 

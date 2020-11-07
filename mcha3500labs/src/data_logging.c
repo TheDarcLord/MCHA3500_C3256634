@@ -56,13 +56,6 @@ void data_logging_stop(void) {
 /* LOGGING EACH SENSOR ELEMENT */
 static void log_potentiometer(void *argument) {
     UNUSED(argument);
-    // TICK = 1ms
-    /* 
-        Print the sample time and potentiometer voltage to,
-        the serial terminal in the format -> 
-        [time],[voltage]
-    */
-
     printf("%f, %f\n", (float) logCount/100.0, get_pot_voltage()); // Actually want 'Sample Time'
     logCount ++;
     /* Stop logging once 2 seconds is reached (Complete this once you have created the stop function

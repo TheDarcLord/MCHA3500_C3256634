@@ -6,13 +6,20 @@ static void _reset(int, char *[]);
 static void _cmd_getPotentiometerVoltage(int, char *[]);
 static void _cmd_logPotentiometerVoltage(int, char *[]);
 static void _cmd_setMotorVoltage(int, char *[]);
+static void _cmd_getOmegaA(int, char *[]);  // OmegaA -> Armature Angular Velocity
+
 static void _cmd_getCurrent(int, char *[]);
-static void _cmd_getOmegaA(int, char *[]);
 static void _cmd_getOmega(int, char *[]);
 static void _cmd_getTheta(int, char *[]);
+static void _cmd_runKF(int, char *[]);
+static void _cmd_getFCurrent(int, char *[]);
+static void _cmd_getFOmega(int, char *[]);
+static void _cmd_getFTheta(int, char *[]);
+
 static void _cmd_getRawEnc(int, char *[]);
 static void _cmd_logIMUpot(int argc, char *argv[]);
 static void _cmd_logIMU(int argc, char *argv[]);
+
 // Modules that provide commands
 #include "heartbeat_cmd.h"
 
@@ -26,12 +33,16 @@ static CMD_T cmd_table[] =
     {heartbeat_cmd                  , "heartbeat"   , "[start|stop]"              , "Get status or start/stop heartbeat task"           },
     {_cmd_setMotorVoltage           , "setVoltage"  , ""                          , "Set Voltage of Motor (+-12V)"                      },
     {_cmd_getCurrent                , "getCurrent"  , ""                          , "Get the armature Current"                          },
+    {_cmd_getOmega                  , "getOmega"    , ""                          , "Get the Chassis Position/sec"                      },
+    {_cmd_getTheta                  , "getTheta"    , ""                          , "Get the Chassis Postion"                           },
+    {_cmd_runKF                     , "runKF"       , ""                          , "RunKF -> Pulls sensor data & runs"},
+    {_cmd_getFCurrent               , "getFCurrent"  , ""                         , "Get the FILTERED armature Current"                 },
+    {_cmd_getFOmega                 , "getFOmega"    , ""                         , "Get the FILTERED Chassis Position/sec"             },
+    {_cmd_getFTheta                 , "getFTheta"    , ""                         , "Get the FILTERED Chassis Postion"                  },
     {_cmd_getOmegaA                 , "getOmegaA"   , ""                          , "Get the armature Postion/sec"                      },             
-    {_cmd_getRawEnc                 , "getRaw"    , ""                            , "Get the armature Encoder Value"                    },
+    {_cmd_getRawEnc                 , "getRaw"      , ""                          , "Get the armature Encoder Value"                    },
     {_cmd_logIMUpot                 , "logIMUPot"   , ""                          , "Logs IMU & Potentiometer voltage level for 5 sec"  },
-    {_cmd_logIMU                    , "logIMU"      , ""                          , "Logs IMU"                                          },
-    {_cmd_getOmega                  , "getOmega"   , ""                           , "Get the Chassis Position/sec"                      },
-    {_cmd_getTheta                  , "getTheta"   , ""                           , "Get the Chassis Postion"                           }
+    {_cmd_logIMU                    , "logIMU"      , ""                          , "Logs IMU"                                          }
 };
 
 enum {CMD_TABLE_SIZE = sizeof(cmd_table)/sizeof(CMD_T)};
@@ -48,6 +59,17 @@ void _cmd_setMotorVoltage(int argc, char *argv[]) {
         motor_set_voltage(atof(argv[1]));
     }
 }
+void _cmd_runKF(int argc, char *argv[]) {
+    UNUSED(argv);
+    UNUSED(argc);
+    runKF();
+    printf("%f\n", 1.0);
+}
+void _cmd_getOmegaA(int argc, char *argv[]) {
+    UNUSED(argv);
+    UNUSED(argc);
+    printf("%f\n", encoder_pop_count());
+}
 
 void _cmd_getCurrent(int argc, char *argv[]) {
     UNUSED(argv);
@@ -55,10 +77,10 @@ void _cmd_getCurrent(int argc, char *argv[]) {
     printf("%f\n", ammeter_get_value());
 }
 
-void _cmd_getOmegaA(int argc, char *argv[]) {
+void _cmd_getFCurrent(int argc, char *argv[]) {
     UNUSED(argv);
-    UNUSED(argc);
-    printf("%f\n", encoder_pop_count());
+    UNUSED(argc); 
+    printf("%f\n", getFilteredCurrent());
 }
 
 void _cmd_getTheta(int argc, char *argv[]) {
@@ -68,11 +90,25 @@ void _cmd_getTheta(int argc, char *argv[]) {
     printf("%f\n", get_angle(RADIANS));
 }
 
+void _cmd_getFTheta(int argc, char *argv[]) {
+    UNUSED(argv);
+    UNUSED(argc);
+    IMU_read();
+    printf("%f\n", getFilteredAngle());
+}
+
 void _cmd_getOmega(int argc, char *argv[]) {
     UNUSED(argv);
     UNUSED(argc); 
     IMU_read();
     printf("%f\n", get_gyroY());
+}
+
+void _cmd_getFOmega(int argc, char *argv[]) {
+    UNUSED(argv);
+    UNUSED(argc); 
+    IMU_read();
+    printf("%f\n", getFilteredOmega());
 }
 
 void _cmd_getRawEnc(int argc, char *argv[]) {

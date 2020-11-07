@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include "kalman.h"
 
 
 typedef enum {

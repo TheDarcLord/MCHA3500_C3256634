@@ -2,6 +2,8 @@
 #include "cmsis_os2.h"
 #include "stm32f4xx_hal_pwr_ex.h"
 
+#include "kalman.h"
+
 #include "motor.h"
 #include "encoder.h"
 #include "IMU.h"
@@ -24,6 +26,8 @@ int main(void)
     // Initialise scheduler
     osKernelInitialize();
 
+    
+
     // Initialise hardware modules
     uart_init();
 
@@ -31,7 +35,7 @@ int main(void)
     encoder_init();
     motor_init();
     ammeter_init();
-
+    initKF();
     // TEST ->
     //
 
