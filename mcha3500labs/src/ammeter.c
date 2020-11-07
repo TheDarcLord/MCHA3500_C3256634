@@ -87,7 +87,6 @@ float ammeter_get_value(void)
         result = HAL_ADC_GetValue(&_hadc1);
     }
 
-
     return ((((float) result) * PIN_VMAX * direction) / (MAX12BIT * V_PER_C)) ;
 }
 
