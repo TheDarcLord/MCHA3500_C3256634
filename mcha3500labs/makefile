@@ -52,6 +52,7 @@ SRC_STM = \
 	$(SRCDIR)/encoder.c \
 	$(SRCDIR)/ammeter.c \
 	$(SRCDIR)/IMU.c \
+	$(SRCDIR)/kalman.c
 
 SRC_MPU6050LIB = \
 	$(MPU6050LIB_ROOT)/tm_stm32_gpio.c \
