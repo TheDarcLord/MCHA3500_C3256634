@@ -39,14 +39,14 @@ static float Ad[KALMAN_STATES*KALMAN_STATES] = {
     1.0,    0.0,   0.0,         0.0,
     T,      1.0,   0.0,         0.0,
     0.0,    0.0,   1.0,         0.0,
-    0.0,    0.0,   0.0,         0.0
+    0.0,    0.0,   0.0,   -1*(Ra/La)
 };
 
 static float Bd[KALMAN_STATES*KALMAN_INPUTS] = {
     0.0,        0.0,
     0.0,        0.0,
     0.0,        0.0,
-    0.0,        0.0
+    (1/La),  -1*(Kw/La)
 };
 
 static float Cd[SENSOR_OUTPUT*KALMAN_STATES] = {
@@ -58,21 +58,21 @@ static float Cd[SENSOR_OUTPUT*KALMAN_STATES] = {
 static float Rd[SENSOR_OUTPUT*SENSOR_OUTPUT] = {
     0.0057,     0.0,        0.0,
     0.0,        0.0057,     0.0,
-    0.0,        0.0,        0.0469
+    0.0,        0.0,        0.0022
 };
 
 static float Qd[KALMAN_STATES*KALMAN_STATES] = {
-    1e-8,   0.0,    0.0,    0.0,
-    0.0,    1e-8,   0.0,    0.0,
-    0.0,    0.0,    1.0,   0.0,
-    0.0,    0.0,    0.0,    1e-15
+    1e-6,   0.0,    0.0,    0.0,
+    0.0,    1e-5,   0.0,    0.0,
+    0.0,    0.0,    1e-8,    0.0,
+    0.0,    0.0,    0.0,    1e-13
 };
 
 static float Pmd[KALMAN_STATES*KALMAN_STATES] = {
-    1e-9,    0.0,   0.0,   0.0,
-    0.0,    1e-9,   0.0,   0.0,
-    0.0,    0.0,   1e-9,   0.0,
-    0.0,    0.0,   0.0,   1e-9
+    1.0,    0.0,   0.0,   0.0,
+    0.0,    1.0,   0.0,   0.0,
+    0.0,    0.0,   1.0,   0.0,
+    0.0,    0.0,   0.0,   1.0
 };
 
 static const float eyed[KALMAN_STATES*KALMAN_STATES] = {
