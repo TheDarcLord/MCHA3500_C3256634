@@ -51,7 +51,7 @@ SRC_STM = \
 	$(SRCDIR)/motor.c \
 	$(SRCDIR)/encoder.c \
 	$(SRCDIR)/ammeter.c \
-	$(SRCDIR)/controller.c 
+	$(SRCDIR)/controller.c \
 	$(SRCDIR)/qpas_sub_noblas.c
 
 SRC_MPU6050LIB = \
