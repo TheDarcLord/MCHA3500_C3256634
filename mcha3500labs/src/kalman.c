@@ -244,14 +244,11 @@ void initKF(void) {
 }
 
 void runKF(void) {
-    // 1st, 2nd, Out
     /* PACK MEASUREMENT VECTOR */
     IMU_read();
-    // vk
-    yid[0] = get_angle(RADIANS);
+    yid[0] = get_angle(RADIANS);    // vk 
     yid[1] = get_gyroY();
     yid[2] = ammeter_get_value();
-    //printf("%f omega\n%f theta\n%f I\n", yid[0],yid[1],yid[2]);
     
     ukd[0] = 0;
     ukd[1] = 0;
@@ -259,64 +256,40 @@ void runKF(void) {
 
     /* Compute Kalman gain */
     arm_mat_mult_f32(&C,&Pm,&temp34);               // temp34 = C * Pm
-    //printf("temp34:\n%f %f %f %f \n%f %f %f %f\n%f %f %f %f\n", temp34d[0], temp34d[1], temp34d[2], temp34d[3],temp34d[4], temp34d[5], temp34d[6], temp34d[7],temp34d[8], temp34d[9], temp34d[10], temp34d[11]);
     arm_mat_trans_f32(&C,&temp43a);                 // temp43 = C'
-    //printf("temp43:\n%f %f %f \n%f %f %f \n%f %f %f \n%f %f %f \n", temp43d[0], temp43d[1], temp43d[2], temp43d[3],temp43d[4], temp43d[5], temp43d[6], temp43d[7],temp43d[8], temp43d[9], temp43d[10], temp43d[11]);
     arm_mat_mult_f32(&temp34,&temp43a,&temp33a);    // temp33a = C * PM * C'
-    //printf("temp33:\n%f %f %f \n%f %f %f \n%f %f %f \n", temp33d[0], temp33d[1], temp33d[2], temp33d[3],temp33d[4], temp33d[5], temp33d[6], temp33d[7],temp33d[8]);
     arm_mat_add_f32(&temp33a,&R,&temp33b);          // temp33b = (C*PM*C' + R)
     arm_mat_inverse_f32(&temp33b,&temp33a);         // temp33a = (C*PM*C' + R)^-1
     arm_mat_mult_f32(&Pm,&temp43a,&temp43b);        // temp43b = Pm * C'
     arm_mat_mult_f32(&temp43b,&temp33a,&Kk);        // Kk = (Pm * C') * (C*PM*C' + R)^-1
-    //printf("Kk:\n%f %f %f \n%f %f %f \n%f %f %f \n%f %f %f \n", Kkd[0], Kkd[1], Kkd[2], Kkd[3],Kkd[4], Kkd[5], Kkd[6], Kkd[7],Kkd[8], Kkd[9], Kkd[10], Kkd[11]);
 
     /* Compute corrected state estimate */
     arm_mat_mult_f32(&C,&xm,&temp31a);              // temp31a = C * xm
-    //printf("temp31a:\n%f \n%f \n%f \n", temp31d[0], temp31d[1], temp31d[2]);
     arm_mat_sub_f32(&yi,&temp31a,&temp31b);         // temp31b = yi - C*xm
-    //printf("temp31b:\n%f \n%f \n%f \n", temp31e[0], temp31e[1], temp31e[2]);
     arm_mat_mult_f32(&Kk,&temp31b,&temp41a);        // temp41a = KK * (yi - C*xm)
-    //printf("Temp41a: \n%f \n%f \n%f \n%f \n", temp41d[0], temp41d[1], temp41d[2], temp41d[3]);
     arm_mat_add_f32(&xm,&temp41a,&xp);              // xp = xm + KK * (yi - C*xm)
-
-    //printf("XP: \n%f - Omega \n%f - Theta \n%f - B \n%f - Current \n", xpd[0], xpd[1], xpd[2], xpd[3]);
 
     /* Compute new measurement error covariance */
     arm_mat_mult_f32(&Kk,&C,&temp44a);              // temp44a = Kk*C
-    //printf("temp44a: \n%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n", temp44d[0], temp44d[1], temp44d[2], temp44d[3],temp44d[4], temp44d[5], temp44d[6], temp44d[7],temp44d[8], temp44d[9], temp44d[10], temp44d[11], temp44d[12], temp44d[13], temp44d[14], temp44d[15]);
     arm_mat_sub_f32(&EYE,&temp44a,&temp44b);        // temp44b = EYE - Kk*C
-    //printf("temp44b: \n%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n", temp44e[0], temp44e[1], temp44e[2], temp44e[3],temp44e[4], temp44e[5], temp44e[6], temp44e[7],temp44e[8], temp44e[9], temp44e[10], temp44e[11], temp44e[12], temp44e[13], temp44e[14], temp44e[15]);
     arm_mat_trans_f32(&temp44b,&temp44c);         // temp44c = (EYE - Kk*C)'
-    //printf("temp44c: \n%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n", temp44f[0], temp44f[1], temp44f[2], temp44f[3],temp44f[4], temp44f[5], temp44f[6], temp44f[7],temp44f[8], temp44f[9], temp44f[10], temp44f[11], temp44f[12], temp44f[13], temp44f[14], temp44f[15]);
     arm_mat_mult_f32(&temp44b,&Pm,&temp44a);        // temp44a = (EYE - Kk*C) * Pm
-    //printf("temp44a: \n%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n", temp44d[0], temp44d[1], temp44d[2], temp44d[3],temp44d[4], temp44d[5], temp44d[6], temp44d[7],temp44d[8], temp44d[9], temp44d[10], temp44d[11], temp44d[12], temp44d[13], temp44d[14], temp44d[15]);
     arm_mat_mult_f32(&temp44a,&temp44c,&temp44b);   // temp44b = (EYE - Kk*C) * Pm * (EYE - Kk*C)'
-    //printf("temp44b: \n%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n", temp44e[0], temp44e[1], temp44e[2], temp44e[3],temp44e[4], temp44e[5], temp44e[6], temp44e[7],temp44e[8], temp44e[9], temp44e[10], temp44e[11], temp44e[12], temp44e[13], temp44e[14], temp44e[15]);
     arm_mat_mult_f32(&Kk,&R,&temp43a);              // temp43a = Kk*R
-    //printf("temp43:\n%f %f %f \n%f %f %f \n%f %f %f \n%f %f %f \n", temp43d[0], temp43d[1], temp43d[2], temp43d[3],temp43d[4], temp43d[5], temp43d[6], temp43d[7],temp43d[8], temp43d[9], temp43d[10], temp43d[11]);
     arm_mat_trans_f32(&Kk,&temp34);                 // temp34 = Kk'
     arm_mat_mult_f32(&temp43a,&temp34,&temp44a);    // temp44a = Kk*R*KK'
-    //printf("temp44a: \n%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n", temp44d[0], temp44d[1], temp44d[2], temp44d[3],temp44d[4], temp44d[5], temp44d[6], temp44d[7],temp44d[8], temp44d[9], temp44d[10], temp44d[11], temp44d[12], temp44d[13], temp44d[14], temp44d[15]);
     arm_mat_add_f32(&temp44b,&temp44a,&Pp);         // Pp = (EYE - Kk*C) * Pm * (EYE - Kk*C)' + Kk*R*KK'
-    //printf("Pp: \n%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n", Ppd[0], Ppd[1], Ppd[2], Ppd[3],Ppd[4], Ppd[5], Ppd[6], Ppd[7],Ppd[8], Ppd[9], Ppd[10], Ppd[11], Ppd[12], Ppd[13], Ppd[14], Ppd[15]);
     
     /* Predict next state */
     arm_mat_mult_f32(&A,&xp,&temp41a);              // temp41a = A*xp
-    //printf("A*XP: \n%f - Omega \n%f - Theta \n%f - B \n%f - Current \n", temp41d[0], temp41d[1], temp41d[2], temp41d[3]);
     arm_mat_mult_f32(&B,&uk,&temp41b);              // temp41b = B*uk
-    //printf("B*uk: \n%f - Omega \n%f - Theta \n%f - B \n%f - Current \n", temp41e[0], temp41e[1], temp41e[2], temp41e[3]);
     arm_mat_add_f32(&temp41a,&temp41b,&xm);         // xm = A*xp + B*uk
-
-    //printf("XM: \n%f - Omega \n%f - Theta \n%f - B \n%f - Current \n", xmd[0], xmd[1], xmd[2], xmd[3]);
 
     /* Compute prediction error covariance */
     arm_mat_mult_f32(&A,&Pp,&temp44a);              // temp44a = A*Pp
-    //printf("temp44a: \n%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n", temp44d[0], temp44d[1], temp44d[2], temp44d[3],temp44d[4], temp44d[5], temp44d[6], temp44d[7],temp44d[8], temp44d[9], temp44d[10], temp44d[11], temp44d[12], temp44d[13], temp44d[14], temp44d[15]);
     arm_mat_trans_f32(&A,&temp44b);                 // temp44b = A'
     arm_mat_mult_f32(&temp44a,&temp44b,&temp44c);   // temp44c = A*Pp*A'
-    //printf("temp44c: \n%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n", temp44f[0], temp44f[1], temp44f[2], temp44f[3],temp44f[4], temp44f[5], temp44f[6], temp44f[7],temp44f[8], temp44f[9], temp44f[10], temp44f[11], temp44f[12], temp44f[13], temp44f[14], temp44f[15]);
     arm_mat_add_f32(&temp44c,&Q,&Pm);               // Pm = A*Pp*A' + Q
-    //printf("Pm: \n%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n", Pmd[0], Pmd[1], Pmd[2], Pmd[3],Pmd[4], Pmd[5], Pmd[6], Pmd[7],Pmd[8], Pmd[9], Pmd[10], Pmd[11], Pmd[12], Pmd[13], Pmd[14], Pmd[15]);
 }
 
 float getFilteredOmega(void) {
