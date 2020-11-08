@@ -39,14 +39,14 @@ static float Ad[KALMAN_STATES*KALMAN_STATES] = {
     1.0,    0.0,   0.0,         0.0,
     T,      1.0,   0.0,         0.0,
     0.0,    0.0,   1.0,         0.0,
-    0.0,    0.0,   0.0,   -1*(Ra/La)
+    0.0,    0.0,   0.0,         0.0
 };
 
 static float Bd[KALMAN_STATES*KALMAN_INPUTS] = {
     0.0,        0.0,
     0.0,        0.0,
     0.0,        0.0,
-    (1/La),     (-Kw/La)
+    0.0,        0.0
 };
 
 static float Cd[SENSOR_OUTPUT*KALMAN_STATES] = {
@@ -56,23 +56,23 @@ static float Cd[SENSOR_OUTPUT*KALMAN_STATES] = {
 };
 
 static float Rd[SENSOR_OUTPUT*SENSOR_OUTPUT] = {
-    0.3213e-4,  0.0,        0.0,
-    0.0,        0.3213e-4,  0.0,
-    0.0,        0.0,        0.0022
+    0.0057,     0.0,        0.0,
+    0.0,        0.0057,     0.0,
+    0.0,        0.0,        0.0469
 };
 
 static float Qd[KALMAN_STATES*KALMAN_STATES] = {
-    1e-7,   0.0,    0.0,    0.0,
-    0.0,    1e-7,   0.0,    0.0,
-    0.0,    0.0,    1e-7,   0.0,
+    1e-8,   0.0,    0.0,    0.0,
+    0.0,    1e-8,   0.0,    0.0,
+    0.0,    0.0,    1.0,   0.0,
     0.0,    0.0,    0.0,    1e-15
 };
 
 static float Pmd[KALMAN_STATES*KALMAN_STATES] = {
-    1.0,    0.0,   0.0,   0.0,
-    0.0,    1.0,   0.0,   0.0,
-    0.0,    0.0,   1.0,   0.0,
-    0.0,    0.0,   0.0,   1.0
+    1e-9,    0.0,   0.0,   0.0,
+    0.0,    1e-9,   0.0,   0.0,
+    0.0,    0.0,   1e-9,   0.0,
+    0.0,    0.0,   0.0,   1e-9
 };
 
 static const float eyed[KALMAN_STATES*KALMAN_STATES] = {
@@ -247,11 +247,10 @@ void runKF(void) {
     // 1st, 2nd, Out
     /* PACK MEASUREMENT VECTOR */
     IMU_read();
-    arm_mat_mult_f32(&C, &xm, &yi);
     // vk
-    yid[0] = yid[0] + get_angle(RADIANS);
-    yid[1] = yid[1] + get_gyroY();
-    yid[2] = yid[2] + ammeter_get_value();
+    yid[0] = get_angle(RADIANS);
+    yid[1] = get_gyroY();
+    yid[2] = ammeter_get_value();
     //printf("%f omega\n%f theta\n%f I\n", yid[0],yid[1],yid[2]);
     
     ukd[0] = 0;
@@ -280,7 +279,7 @@ void runKF(void) {
     //printf("Temp41a: \n%f \n%f \n%f \n%f \n", temp41d[0], temp41d[1], temp41d[2], temp41d[3]);
     arm_mat_add_f32(&xm,&temp41a,&xp);              // xp = xm + KK * (yi - C*xm)
 
-    printf("XP: \n%f - Omega \n%f - Theta \n%f - B \n%f - Current \n", xpd[0], xpd[1], xpd[2], xpd[3]);
+    //printf("XP: \n%f - Omega \n%f - Theta \n%f - B \n%f - Current \n", xpd[0], xpd[1], xpd[2], xpd[3]);
 
     /* Compute new measurement error covariance */
     arm_mat_mult_f32(&Kk,&C,&temp44a);              // temp44a = Kk*C
