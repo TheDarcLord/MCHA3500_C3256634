@@ -7,28 +7,29 @@ static void ctrlMotor(void *argument);
 static float VOLTAGE = 0.0;
 static float CURRENT = 0.0;
 static float _error = 0;
+static float OMEGAA = 0.0;
 
 #define KI  0.00
 #define KP  0.001
 
 void ctrlMotor(void *argument) {
-    printf("Va: %f \n", VOLTAGE);
+    //printf("Va: %f \n", VOLTAGE);
     
     UNUSED(argument);
-    float Wa = encoder_pop_count();
+    OMEGAA = encoder_pop_count();
     float x = ammeter_get_value();
-    printf("Ia: %f \n", x);
+    //printf("Ia: %f \n", x);
     float Ra = 6.6002;
     float Kw = 0.0055;
     // Vin = Ra*Ia + KwWa + U
     float Ihat = x - CURRENT;
     float U = (KP*(Ihat) + KI*_error);
-    VOLTAGE = (Ra*CURRENT) + (Kw*Wa) + U;
+    VOLTAGE = (Ra*CURRENT) + (Kw*OMEGAA) + U;
     // (Z+1) = 0.99*_error + 100*U;
     if(fabs(VOLTAGE) < 11) {
         motor_set_voltage(VOLTAGE);
     } else {
-        printf("VOLTAGE LIMIT EXCEEDED!!! \n");
+        //printf("VOLTAGE LIMIT EXCEEDED!!! \n");
         motor_set_voltage(0.0);
     }
     _error = 0.99*_error + 0.995*U;
@@ -56,4 +57,8 @@ void ctrlMotor_stop(void) {
 
 void motor_set_current(float c) {
     CURRENT = c;
+}
+
+float motor_get_velocity(void) {
+    return OMEGAA;
 }

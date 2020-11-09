@@ -64,7 +64,7 @@ void _cmd_getCurrent(int argc, char *argv[]) {
 void _cmd_getOmegaA(int argc, char *argv[]) {
     UNUSED(argv);
     UNUSED(argc);
-    printf("%f\n", encoder_pop_count());
+    printf("%f\n", motor_get_velocity());
 }
 
 void _cmd_getPotentiometerVoltage(int argc, char *argv[]) {
