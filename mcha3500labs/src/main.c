@@ -3,6 +3,7 @@
 #include "stm32f4xx_hal_pwr_ex.h"
 
 #include "motor.h"
+#include "motorControl.h"
 #include "encoder.h"
 #include "uart.h"
 #include "cmd_task.h"
@@ -30,6 +31,9 @@ int main(void)
     encoder_init();
     motor_init();
     ammeter_init();
+
+    // TEST!
+    ctrlMotor_init();
 
     // TEST ->
     //

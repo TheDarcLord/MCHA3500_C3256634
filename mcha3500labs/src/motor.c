@@ -10,7 +10,6 @@ static void _motor_gpio_init(void);
 //static uint8_t _is_running = 0;
 static uint8_t _is_init = 0;
 
-
 /* INTERFACE: VNH5019
  *  PINS:   BOARD:  DESCRIPTION;
  *   OUTA     M+    - Output of half-bridge A (motor +)
@@ -97,6 +96,8 @@ void _motor_set_direction(uint8_t dir)
         break;
     }
 }
+
+
 
 uint16_t motor_set_voltage(float voltage) {
     /* Voltage = %DC * MAXVOLTAGE

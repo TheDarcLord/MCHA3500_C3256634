@@ -12,6 +12,7 @@
 #include "stm32f4xx_hal_gpio_ex.h"
 #include "stm32f4xx_it.h"
 #include "ammeter.h"
+#include "encoder.h"
 //#include "stm32f4xx_hal_adc.h"
 
 //#define     MAXDUTY (0x000A)        // 10 -> 10 Mhz
@@ -23,8 +24,12 @@
 #define     BCK   2     // Backward
 #define     BRK   3     // Brake
 
+
+
 void        motor_init(void);
 uint16_t    motor_set_voltage(float voltage);
 void        _motor_set_direction(uint8_t dir);
+
+
 
 #endif

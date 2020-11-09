@@ -6,20 +6,24 @@ static void _reset(int, char *[]);
 static void _cmd_getPotentiometerVoltage(int, char *[]);
 static void _cmd_logPotentiometerVoltage(int, char *[]);
 static void _cmd_setMotorVoltage(int, char *[]);
+static void _cmd_setMotorCurrent(int, char *[]);
 static void _cmd_getCurrent(int, char *[]);
 static void _cmd_getOmegaA(int, char *[]);
+static void _cmd_startMotor(int, char *[]);
 
 // Command table
 static CMD_T cmd_table[] =
 {
-    {_help                          , "help"        , ""                          , "Displays this help message"                } ,
-    {_reset                         , "reset"       , ""                          , "Restarts the system."                      } ,
-    {_cmd_getPotentiometerVoltage   , "getPot"      , ""                          , "Displays Potentiometer voltage level"      } ,
-    {_cmd_logPotentiometerVoltage   , "logPot"      , ""                          , "Logs Potentiometer voltage level for 2 sec"} , 
-    {heartbeat_cmd                  , "heartbeat"   , "[start|stop]"              , "Get status or start/stop heartbeat task"   } ,
-    {_cmd_setMotorVoltage           , "setVoltage"  , ""                          , "Set Voltage of Motor (+-12V)"},
-    {_cmd_getCurrent                , "getCurrent"  , ""                          , "Get the armature Current"},
-    {_cmd_getOmegaA                 , "getOmegaA"   , ""                          , "Get the armature Postion/sec"}
+    {_help                          , "help"        , ""                          , "Displays this help message"                },
+    {_reset                         , "reset"       , ""                          , "Restarts the system."                      },
+    {_cmd_getPotentiometerVoltage   , "getPot"      , ""                          , "Displays Potentiometer voltage level"      },
+    {_cmd_logPotentiometerVoltage   , "logPot"      , ""                          , "Logs Potentiometer voltage level for 2 sec"}, 
+    {heartbeat_cmd                  , "heartbeat"   , "[start|stop]"              , "Get status or start/stop heartbeat task"   },
+    {_cmd_startMotor                , "startMotor"  , ""                          , "Starts the motor"              },
+    {_cmd_setMotorVoltage           , "setVoltage"  , ""                          , "Set Voltage of Motor (+-12V)"              },
+    {_cmd_setMotorCurrent           , "setCurrent"  , ""                          , "Set Current of Motor"                      },
+    {_cmd_getCurrent                , "getCurrent"  , ""                          , "Get the armature Current"                  },
+    {_cmd_getOmegaA                 , "getOmegaA"   , ""                          , "Get the armature Postion/sec"              }
 };
 enum {CMD_TABLE_SIZE = sizeof(cmd_table)/sizeof(CMD_T)};
 enum {CMD_MAX_TOKENS = 5};      // Maximum number of tokens to process (command + arguments)
@@ -36,6 +40,21 @@ void _cmd_setMotorVoltage(int argc, char *argv[]) {
     }
 }
 
+void _cmd_setMotorCurrent(int argc, char *argv[]) {
+    if(argc < 2) {
+        printf("Invalid number of arguments");
+    } else {
+        motor_set_current(atof(argv[1]));
+    }
+}
+
+
+void _cmd_startMotor(int argc, char *argv[]) {
+    UNUSED(argv);
+    UNUSED(argc);
+    ctrlMotor_start();
+}
+
 void _cmd_getCurrent(int argc, char *argv[]) {
     UNUSED(argv);
     UNUSED(argc); 
@@ -47,8 +66,6 @@ void _cmd_getOmegaA(int argc, char *argv[]) {
     UNUSED(argc);
     printf("%f\n", encoder_pop_count());
 }
-
-
 
 void _cmd_getPotentiometerVoltage(int argc, char *argv[]) {
     UNUSED(argv);

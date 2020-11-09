@@ -26,5 +26,7 @@ void    encoder_edge_A_isr(void);
 void    encoder_edge_B_isr(void);
 float   countToRadians(int32_t);
 float   countToOmega(int32_t);
+void    encoder_enable_interrupts(void);
+void    encoder_disable_interrupts(void);
 
 #endif

@@ -1,8 +1,5 @@
 #include "encoder.h"
 
-static void _encoder_enable_interrupts(void);
-static void _encoder_disable_interrupts(void);
-
 static uint8_t _is_init = 0;
 static int32_t _count = 0;
 
@@ -43,8 +40,6 @@ void encoder_init(void)
 		*/
 		HAL_NVIC_SetPriority(EXTI2_IRQn, 0x0F, 0x0F);
 		HAL_NVIC_SetPriority(EXTI3_IRQn, 0x0F, 0x0F);
-
-		_encoder_enable_interrupts();
         _is_init = 1;
     }
 }
@@ -75,12 +70,8 @@ void encoder_edge_B_isr(void)
 	}
 }
 
-void encoder_set_count(int32_t count)
-{
-    // Atomically set _count
-    //_encoder_disable_interrupts();
-    _count = count;
-    //_encoder_enable_interrupts();
+void encoder_set_count(int32_t count) {
+	_count = count;
 }
 
 float encoder_get_count(void) {
@@ -96,14 +87,14 @@ float encoder_pop_count(void) {
 	return countToOmega(count);
 }
 
-void _encoder_enable_interrupts(void)
+void encoder_enable_interrupts(void)
 {
     /* Enable the EXTI0 and EXTI1 IRQs using the NVIC */
 	HAL_NVIC_EnableIRQ(EXTI2_IRQn);
 	HAL_NVIC_EnableIRQ(EXTI3_IRQn);
 }
 
-void _encoder_disable_interrupts(void)
+void encoder_disable_interrupts(void)
 {
     /* Disable the EXTI0 and EXTI1 IRQs using the NVIC */
 	HAL_NVIC_DisableIRQ(EXTI2_IRQn);

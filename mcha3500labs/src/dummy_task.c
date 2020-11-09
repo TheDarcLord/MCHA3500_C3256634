@@ -63,20 +63,12 @@ void dummy_task_update(void *arg)
     UNUSED(arg);
     while(1)
     {
-        //float POS = encoder_get_count();
-        //printf("Encoder: %f \n", POS);
-        // TODO: Add print statements for motor and potentiometer
-        //motor_set_voltage(6.0);
-
-        // Non-blocking delay to wait
-        
-        //printf("Potenti %f \n", pot_get_value());
-        osDelay(10);
+        //printf("Omega: %f \n",encoder_pop_count());
+        //osDelay(10); // 100Hz
     }
 }
 
-void dummy_task_deinit(void)
-{
+void dummy_task_deinit(void) {
     _is_init = 0;
     _is_running = 0;
 }

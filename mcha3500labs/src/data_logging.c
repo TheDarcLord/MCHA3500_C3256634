@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdint.h>
 #include "data_logging.h"
+#include "encoder.h"
 
 uint16_t logCount;
 osTimerId_t _dataLogID;
@@ -22,13 +23,13 @@ void log_potentiometer(void *argument) {
         the serial terminal in the format -> 
         [time],[voltage]
     */
-    printf("%f, %f\n", (float) logCount/100.0, pot_get_value()); // Actually want 'Sample Time'
+    printf("%f, %f\n", (float) logCount/100.0, encoder_pop_count()); // Actually want 'Sample Time'
     logCount ++;
     /* TODO: Increment log count */
 
-    /* TODO: Stop logging once 2 seconds is reached (Complete this once you have created the stop function
+    /* TODO: Stop logging once 20 seconds is reached (Complete this once you have created the stop function
     in the next step) */
-    if(logCount > 200) {
+    if(logCount > 2000) {
         potentiometer_logging_stop();
     }
 }
