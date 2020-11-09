@@ -6,7 +6,7 @@ static void _reset(int, char *[]);
 static void _cmd_getPotentiometerVoltage(int, char *[]);
 static void _cmd_logPotentiometerVoltage(int, char *[]);
 static void _cmd_setMotorVoltage(int, char *[]);
-static void _cmd_setMotorCurrent(int, char *[]);
+static void _cmd_setMotorTorque(int, char *[]);
 static void _cmd_getCurrent(int, char *[]);
 static void _cmd_getOmegaA(int, char *[]);
 static void _cmd_startMotor(int, char *[]);
@@ -21,7 +21,7 @@ static CMD_T cmd_table[] =
     {heartbeat_cmd                  , "heartbeat"   , "[start|stop]"              , "Get status or start/stop heartbeat task"   },
     {_cmd_startMotor                , "startMotor"  , ""                          , "Starts the motor"              },
     {_cmd_setMotorVoltage           , "setVoltage"  , ""                          , "Set Voltage of Motor (+-12V)"              },
-    {_cmd_setMotorCurrent           , "setCurrent"  , ""                          , "Set Current of Motor"                      },
+    {_cmd_setMotorTorque            , "setTorque"   , ""                          , "Set Torque of Motor"                      },
     {_cmd_getCurrent                , "getCurrent"  , ""                          , "Get the armature Current"                  },
     {_cmd_getOmegaA                 , "getOmegaA"   , ""                          , "Get the armature Postion/sec"              }
 };
@@ -40,11 +40,11 @@ void _cmd_setMotorVoltage(int argc, char *argv[]) {
     }
 }
 
-void _cmd_setMotorCurrent(int argc, char *argv[]) {
+void _cmd_setMotorTorque(int argc, char *argv[]) {
     if(argc < 2) {
         printf("Invalid number of arguments");
     } else {
-        motor_set_current(atof(argv[1]));
+        motor_set_torque(atof(argv[1]));
     }
 }
 

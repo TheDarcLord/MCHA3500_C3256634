@@ -6,16 +6,23 @@ static void ctrlMotor(void *argument);
 
 static float VOLTAGE = 0.0;
 static float CURRENT = 0.0;
+static float TORQUE = 0.0;
 static float _error = 0;
-
+static float Tf(float);
 #define KI  0.00
 #define KP  0.001
+#define N   18.75
+#define mKi 0.0055
+#define BR  0.5947e-9
+#define BF  0.9033e-9
 
 void ctrlMotor(void *argument) {
     printf("Va: %f \n", VOLTAGE);
-    
     UNUSED(argument);
     float Wa = encoder_pop_count();
+
+    CURRENT = ((TORQUE/N) + Tf(Wa)) / mKi;
+    
     float x = ammeter_get_value();
     printf("Ia: %f \n", x);
     float Ra = 6.6002;
@@ -32,6 +39,16 @@ void ctrlMotor(void *argument) {
         motor_set_voltage(0.0);
     }
     _error = 0.99*_error + 0.995*U;
+}
+
+float Tf(float omega) {
+    if(omega > 0) {
+        return BF*omega;
+    } else if(omega < 0) {
+        return BR*omega;
+    } else {
+        return 0;
+    }
 }
 
 void ctrlMotor_init(void) {
@@ -54,6 +71,6 @@ void ctrlMotor_stop(void) {
 }
 
 
-void motor_set_current(float c) {
-    CURRENT = c;
+void motor_set_torque(float t) {
+    TORQUE = t;
 }
