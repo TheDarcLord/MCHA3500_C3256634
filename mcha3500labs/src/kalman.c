@@ -39,14 +39,14 @@ static float Ad[KALMAN_STATES*KALMAN_STATES] = {
     1.0,    0.0,   0.0,         0.0,
     T,      1.0,   0.0,         0.0,
     0.0,    0.0,   1.0,         0.0,
-    0.0,    0.0,   0.0,   -1*(Ra/La)
+    0.0,    0.0,   0.0,         0.8479
 };
 
 static float Bd[KALMAN_STATES*KALMAN_INPUTS] = {
     0.0,        0.0,
     0.0,        0.0,
     0.0,        0.0,
-    (1/La),  -1*(Kw/La)
+    0.0230,  -0.0001
 };
 
 static float Cd[SENSOR_OUTPUT*KALMAN_STATES] = {
