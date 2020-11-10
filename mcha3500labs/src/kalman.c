@@ -4,6 +4,18 @@
 #define KALMAN_INPUTS 2
 #define SENSOR_OUTPUT 3
 
+osTimerId_t _KalmanID;
+static void runKF(void *argument);
+
+void kalman_start(void) {
+    //printf("Kalman Filter Started");
+    osTimerStart(_KalmanID, 10U);
+}
+
+void kalman_stop(void) {
+    osTimerStop(_KalmanID);
+}
+
 static float xmd[KALMAN_STATES] = {
     0.0,
     0.0,
@@ -241,18 +253,21 @@ void initKF(void) {
     arm_mat_init_f32(&temp34, SENSOR_OUTPUT, KALMAN_STATES, (float32_t*)temp34d);
     arm_mat_init_f32(&temp43a, KALMAN_STATES, SENSOR_OUTPUT, (float32_t*)temp43d);
     arm_mat_init_f32(&temp43b, KALMAN_STATES, SENSOR_OUTPUT, (float32_t*)temp43e);
+    /* Initialise timer */
+    _KalmanID = osTimerNew(runKF, osTimerPeriodic, (void *)5, NULL);
 }
 
-float runKF(float Ia, float Vin, float Wa) {
+void runKF(void *argument) {
+    UNUSED(argument);
     // Want Kalman to Take in Measurements as argument -> (easier)
     /* PACK MEASUREMENT VECTOR */
     IMU_read();
     yid[0] = get_angle(RADIANS);    // vk 
     yid[1] = get_gyroY();
-    yid[2] = Ia;
-    
-    ukd[0] = Vin; // Vin
-    ukd[1] = Wa; // Wa
+    yid[2] = ammeter_get_value();
+
+    ukd[0] = motor_get_voltage();  // Vin
+    ukd[1] = motor_get_velocity(); // Wa
     // Uk too !
 
     /* Compute Kalman gain */
@@ -291,8 +306,6 @@ float runKF(float Ia, float Vin, float Wa) {
     arm_mat_trans_f32(&A,&temp44b);                 // temp44b = A'
     arm_mat_mult_f32(&temp44a,&temp44b,&temp44c);   // temp44c = A*Pp*A'
     arm_mat_add_f32(&temp44c,&Q,&Pm);               // Pm = A*Pp*A' + Q
-
-    return xpd[3];
 }
 
 float getFilterOmega(void) {

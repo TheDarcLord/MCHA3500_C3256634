@@ -1,34 +1,46 @@
 #include "controller.h"
 
-#define T 0.01
-
 /* Defining sutiable matrix variables for: 
  * https://www.keil.com/pack/doc/CMSIS/DSP/html/group__groupMatrix.html
  * | θ | - Pendulum Angle            -> MPU Acc         0
- * | x'| - Cart Velocity                                1
+ * | ϕ'| - Wheel Velocity                               1
  * | θ'| - Pendulum Angular Velocity -> MPU Gyro        2
  * | z | - Error State of the Integrator                3
  * 
  * Define control matrix values */
 
 /* Define control matrix values */
+
+osTimerId_t _CtrlID;
+
+
+void ctrl_start(void) {
+    //printf("Controller Started");
+    osTimerStart(_CtrlID, 10U);
+}
+
+void ctrl_stop(void) {
+    osTimerStop(_CtrlID);
+}
+
+
 /* COLUMNS = LENGTH CTRL HORIZON */
 static float ctrl_H_f32[CTRL_N_HORIZON*CTRL_N_HORIZON] = {
-    2.340564407470560,	0.320892625666911,	0.301511939073556,	0.282415056489929,	0.263594835913616,
-    0.320892625666911,	2.309380570170620,	0.290794961939758,	0.272474840547024,	0.254413485269127,
-    0.301511939073556,	0.290794961939758,	2.280331247179360,	0.262769263285105,	0.245448600436500,
-    0.282415056489929,	0.272474840547024,	0.262769263285105,	2.253293102940420,	0.236695359210516,
-    0.263594835913616,	0.254413485269127,	0.245448600436500,	0.236695359210516,	2.228149052088300,
-};
+20372062.1148564,	368872.273159349,	365707.349634614,	362567.151502001,	359451.487473482,
+368872.273159349,	20365712.1151564,	362576.556167304,	359465.491416546,	356378.731404430,
+365707.349634614,	362576.556167304,	20359470.2168388,	356388.056214256,	353329.972770447,
+362567.151502001,	359465.491416546,	356388.056214256,	20353334.6584365,	350305.025872890,
+359451.487473482,	356378.731404430,	353329.972770447,	350305.025872890,	20347303.7064501
+}; // Current Best Guess at model
 
 /* ROWS = LENGTH CTRL HORIZON */
 static float ctrl_Gamma_f32[CTRL_N_HORIZON*CTRL_N_STATE] = {
-    -236.922573072506,	-11.6851420589415,	-104.407428303733,	-6.83914711184453,
-    -221.138361910047,	-10.8435555348667,	-97.3795503514464,	-6.28072220821059,
-    -205.728628214385,	-10.0256194038905,	-90.5226557834554,	-5.74174796957586,
-    -190.684585828527,	-9.23078697821476,	-83.8327363868148,	-5.22176581373894,
-    -175.997633610805,	-8.45852324988399,	-77.3058688925836,	-4.72032737432637
-};
+-118882771.853410,	-221587.959340130,	-153298637.799422,	-15259.5079030857,
+-117771432.229115,	-218103.595883141,	-151863813.022083,	-15007.5158465334,
+-116668852.648641,	-214647.801730750,	-150440299.360748,	-14757.6779335828,
+-115574965.326203,	-211220.355626350,	-149028009.289292,	-14509.9773409262,
+-114489703.000578,	-207821.038023943,	-147626855.958912,	-14264.3973754390
+}; // Current Best Guess at model
 
 static float ctrl_f_f32[CTRL_N_HORIZON] = {
     0.0,
@@ -106,34 +118,24 @@ arm_matrix_instance_f32 ctrl_u =        {CTRL_N_INPUT, 1, (float32_t *)ctrl_u_f3
 
 /* Control functions */
 void ctrl_init(void) {
-arm_mat_init_f32(&ctrl_H, CTRL_N_HORIZON, CTRL_N_HORIZON, (float32_t *)ctrl_H_f32);
-arm_mat_init_f32(&ctrl_Gamma, CTRL_N_HORIZON, CTRL_N_STATE, (float32_t *)ctrl_Gamma_f32);
-arm_mat_init_f32(&ctrl_f, CTRL_N_HORIZON, 1, (float32_t *)ctrl_f_f32);
-arm_mat_init_f32(&ctrl_xHat, CTRL_N_STATE, 1, (float32_t *)ctrl_xHat_f32);
-arm_mat_init_f32(&ctrl_u, CTRL_N_INPUT, 1, (float32_t *)ctrl_u_f32);
-}
-
-/* Update state vector elements */
-void ctrl_set_x1h(float x1h) {
-    // Update state x1h
-    ctrl_xHat_f32[0] = x1h;
-}
-void ctrl_set_x2h(float x2h) {
-    // Update state x2h
-    ctrl_xHat_f32[1] = x2h;
-}
-void ctrl_set_x3h(float x3h) {
-    // Update state x3h
-    ctrl_xHat_f32[2] = x3h;
-}
-
-/* Get the current control output */
-float getControl(void) {
-    return ctrl_u_f32[0];
+    /* Initialise timer */
+    _CtrlID = osTimerNew(ctrl_update, osTimerPeriodic, (void *)5, NULL);
+    arm_mat_init_f32(&ctrl_H, CTRL_N_HORIZON, CTRL_N_HORIZON, (float32_t *)ctrl_H_f32);
+    arm_mat_init_f32(&ctrl_Gamma, CTRL_N_HORIZON, CTRL_N_STATE, (float32_t *)ctrl_Gamma_f32);
+    arm_mat_init_f32(&ctrl_f, CTRL_N_HORIZON, 1, (float32_t *)ctrl_f_f32);
+    arm_mat_init_f32(&ctrl_xHat, CTRL_N_STATE, 1, (float32_t *)ctrl_xHat_f32);
+    arm_mat_init_f32(&ctrl_u, CTRL_N_INPUT, 1, (float32_t *)ctrl_u_f32);
 }
 
 /* Update control output */
-void ctrl_update(void) {
+void ctrl_update(void *argument) {
+    UNUSED(argument);
+    //printf("STUCK");
+    
+    ctrl_xHat_f32[0] = getFilterAngle();            // -> MPU Acc
+    ctrl_xHat_f32[1] = (motor_get_velocity() / N);  // -> Wheel Velocity 
+    ctrl_xHat_f32[2] = getFilterOmega();            // -> MPU Gyro
+
     /* Increment integrator state:
      * Z(k+1) = Z(k) + T*Cr*X(k) + T*Dr*U(k);  -LQR
      * Z(k+1) = Z(k) + T*Cr*(X(k)' - xStar);   -MPC
@@ -143,29 +145,6 @@ void ctrl_update(void) {
     ctrl_xHat_f32[3] = ctrl_xHat_f32[3] + (T * ctrl_xHat_f32[1]);
     /* Compute f vector */
     arm_mat_mult_f32(&ctrl_Gamma,&ctrl_xHat,&ctrl_f);
-    /* Solve for optimal inputs over control horizon ->
-        (
-            varint n,           -   Dimension of the vector x
-            varint me,          -   Number of equality constraints
-            varint mc,          -   Number of inequality constraints
-            varint nl,          -   Number of lower bound constraints
-            varint nu,          -   Number of upper bound constraints
-            float * H,          -   H matrix from quadratic cost. Should be flattened into a array of length n×n.
-            float * f,          -   f vector from quadratic cost.
-            float * A,          -   A matrix from inequality constraints. Should be flattened into a array of length mc×n
-            float * b,          -   b vector from inequality constraints.
-            float * l,          -   l_b vector from bound constraints.
-            float * u,          -   ub vector from bound constraints.
-            float * x,          -   Array where solution to QP problem is stored.
-            float * lm,         -   Array where Lagrange multipliers are stored.
-            varint display,     -   1 or 0
-            varint * numits,    -   
-            varint * numadd,    -
-            varint * numdrop    -
-        )
-    */
-
-
 
     qpas_sub_noblas(
         CTRL_N_HORIZON, 
@@ -193,4 +172,21 @@ void ctrl_update(void) {
     // printvector (CTRL_N_HORIZON, ctrl_f_f32, "f");
 }
 
+/* Update state vector elements */
+void ctrl_set_x1h(float x1h) {
+    // Update state x1h
+    ctrl_xHat_f32[0] = x1h;
+}
+void ctrl_set_x2h(float x2h) {
+    // Update state x2h
+    ctrl_xHat_f32[1] = x2h;
+}
+void ctrl_set_x3h(float x3h) {
+    // Update state x3h
+    ctrl_xHat_f32[2] = x3h;
+}
 
+/* Get the current control output */
+float getControl(void) {
+    return ctrl_u_f32[0];
+}

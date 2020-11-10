@@ -13,6 +13,8 @@ static void _cmd_getMotorVelocityA(int, char *[]);  // OmegaA -> Armature Angula
 static void _cmd_getMotorVoltage(int, char *[]);
 static void _cmd_startMotor(int, char *[]);
 
+static void _cmd_startController(int, char *[]);
+
 static void _cmd_getAngleRAW(int, char *[]);
 static void _cmd_getOmegaRAW(int, char *[]);
 static void _cmd_getAngle(int, char *[]);
@@ -37,6 +39,7 @@ static CMD_T cmd_table[] =
     {_cmd_logPotentiometerVoltage   , "logPot"      , ""                          , "Logs Potentiometer voltage level for 2 sec"}, 
     {heartbeat_cmd                  , "heartbeat"   , "[start|stop]"              , "Get status or start/stop heartbeat task"   },
     {_cmd_startMotor                , "startMotor"  , ""                          , "Starts the motor"              },
+    {_cmd_startController           , "startCtrl"  , ""                          , "Starts the controller"              },
     {_cmd_getMotorVoltage           , "getVoltage"  , ""                          , "Get Voltage of Motor (+-12V)"              },
     {_cmd_setMotorTorque            , "setTorque"   , ""                          , "Set Torque of Motor"                      },
     {_cmd_getMotorVelocityA         , "getOmegaA"   , ""                          , "Get the armature Postion/sec"              },
@@ -82,6 +85,13 @@ void _cmd_setMotorTorque(int argc, char *argv[]) {
     } else {
         motor_set_torque(atof(argv[1]));
     }
+}
+
+void _cmd_startController(int argc, char *argv[]) {
+    UNUSED(argv);
+    UNUSED(argc);
+    kalman_start();
+    ctrl_start();
 }
 
 void _cmd_startMotor(int argc, char *argv[]) {
@@ -299,11 +309,11 @@ int _makeargv(char *s, char *argv[], int argvsize)
 }
 
 static void _cmd_getControl(int argc, char *argv[]){
-    /* Supress compiler warnings for unused arguments */
+    /* Supress compiler warnings for unused arguments*/
     UNUSED(argc);
-    UNUSED(argv);
+    //UNUSED(argv);
     /* Update controller */
-    ctrl_update();
+    ctrl_update(argv);
     /* Print control action */
     printf("%f\n", getControl());
 }

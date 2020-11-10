@@ -28,17 +28,12 @@ int main(void)
     // Initialise scheduler
     osKernelInitialize();
 
-    
-
     // Initialise hardware modules
     uart_init();
-
-    // Initialise motor modules
     encoder_init();
     motor_init();
     ammeter_init();
     
-    // TEST!
     ctrlMotor_init();
     initKF();
     ctrl_init();

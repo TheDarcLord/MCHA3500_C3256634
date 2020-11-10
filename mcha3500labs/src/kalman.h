@@ -3,11 +3,12 @@
 
 #include "stm32f4xx_hal.h"
 #include "arm_math.h"
-
+#include "cmsis_os2.h"
 #include "IMU.h"
 #include "ammeter.h"
 #include "encoder.h"
 #include "motor.h"
+#include "motorControl.h"
 
 #define  T  (float) 0.01
 // Motor Params
@@ -16,11 +17,11 @@
 #define  Kw (float) 0.0055
 
 void initKF(void);
-float runKF(float Ia, float Vin, float Wa);
 float getFilterAngle(void);
 float getFilterOmega(void);
 float getFilterCurrent(void);
-
+void kalman_start(void);
+void kalman_stop(void);
 /* Sensor Fusion!>?
  * MODEL:
  * 

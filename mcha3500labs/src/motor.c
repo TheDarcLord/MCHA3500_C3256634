@@ -97,8 +97,6 @@ void _motor_set_direction(uint8_t dir)
     }
 }
 
-
-
 uint16_t motor_set_voltage(float voltage) {
     /* Voltage = %DC * MAXVOLTAGE
      * DC = Voltage/MAXVOLTAGE

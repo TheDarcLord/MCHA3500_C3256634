@@ -12,9 +12,8 @@ static float Tf(float);
 static uint16_t SAFE =  0;
 static float _error =   0;
 
-#define KI  0.00
+#define KI  0.0
 #define KP  0.01
-#define N   30
 #define mKi 0.0055
 #define BR  4.4e-06
 #define BF  4.3e-06
@@ -22,11 +21,12 @@ static float _error =   0;
 void ctrlMotor(void *argument) {
     UNUSED(argument);
     if(SAFE < 50) {
-        OMEGAA  =   encoder_pop_count();
-        float x =   ammeter_get_value();
+        TORQUE = getControl();
+        OMEGAA  = encoder_pop_count();
         //printf("Va: %f \n", VOLTAGE);
         //printf("Ia RAW: %f \n", x);
-        x = runKF(x, VOLTAGE, OMEGAA);
+        float x = getFilterCurrent();
+        printf("Theta: %f\nTorque: %f\n",getFilterAngle(),TORQUE);
         // MOTOR SAFETY CHECK - LONGEVITY:
         // Should remain 25% below stall current: 5.5A
         // Should consume < 12W
@@ -34,10 +34,10 @@ void ctrlMotor(void *argument) {
 
         if(fabs(x) > 5 || (fabs(x)*fabs(VOLTAGE) > 11.8)) {
             SAFE++;
-            printf("Unsafe Ia: %f, Va: %f, Power: %f \n", fabs(x), fabs(VOLTAGE), fabs(x)*fabs(VOLTAGE));
+            //printf("Unsafe Ia: %f, Va: %f, Power: %f \n", fabs(x), fabs(VOLTAGE), fabs(x)*fabs(VOLTAGE));
         } else if((fabs(x)*fabs(VOLTAGE) > 12)) {
             ctrlMotor_stop();
-            printf("Unsafe POWER! \n");
+            //printf("Unsafe POWER! \n");
         } else {
             SAFE = 0;
         }
@@ -52,7 +52,7 @@ void ctrlMotor(void *argument) {
         if(fabs(VOLTAGE) < 12) {
             motor_set_voltage(VOLTAGE);
         } else {
-            printf("VOLTAGE LIMIT EXCEEDED!!! \n");
+            //printf("VOLTAGE LIMIT EXCEEDED!!! \n");
             if(VOLTAGE > 0) {
                 motor_set_voltage(11.9);
             } else {
@@ -85,9 +85,7 @@ void ctrlMotor_init(void) {
 void ctrlMotor_start(void) {
     /* Start data logging timer at 100Hz */
     SAFE = 0;
-    VOLTAGE = 0.0;
-    CURRENT = 0.0;
-    TORQUE = 0.0;
+    //printf("Motor Started");
     osTimerStart(_motorCtrlID, 10U);
     encoder_enable_interrupts();
     encoder_set_count(0);
