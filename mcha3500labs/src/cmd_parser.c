@@ -6,7 +6,6 @@ static void _reset(int, char *[]);
 static void _cmd_getPotentiometerVoltage(int, char *[]);
 static void _cmd_logPotentiometerVoltage(int, char *[]);
 
-
 static void _cmd_setMotorTorque(int, char *[]);
 static void _cmd_getMotorCurrent(int, char *[]);
 //static void _cmd_setMotorCurrent(int, char *[]);
@@ -21,6 +20,10 @@ static void _cmd_getOmega(int, char *[]);
 
 static void _cmd_logIMUpot(int argc, char *argv[]);
 static void _cmd_logIMU(int argc, char *argv[]);
+
+static void _cmd_setControlState(int argc, char *argv[]);
+static void _cmd_getControl(int argc, char *argv[]);
+
 
 // Modules that provide commands
 #include "heartbeat_cmd.h"
@@ -44,7 +47,9 @@ static CMD_T cmd_table[] =
     {_cmd_getOmega                  , "getOmega"  , ""                          , "Chassis Omega"              },
     {_cmd_getMotorCurrent           , "getCurrent"  , ""                          , "Get Current of Motor"                      },
     {_cmd_logIMUpot                 , "logIMUPot"   , ""                          , "Logs IMU & Potentiometer voltage level for 5 sec"  },
-    {_cmd_logIMU                    , "logIMU"      , ""                          , "Logs IMU"                                          }
+    {_cmd_logIMU                    , "logIMU"      , ""                          , "Logs IMU"                                          },
+    {_cmd_setControlState           , "setControl"  , ""                          , "Get status or start/stop heartbeat task"   } ,
+    {_cmd_getControl                , "getControl"  , ""                          , "Get status or start/stop heartbeat task"   }
 };
 
 enum {CMD_TABLE_SIZE = sizeof(cmd_table)/sizeof(CMD_T)};
@@ -291,4 +296,36 @@ int _makeargv(char *s, char *argv[], int argvsize)
     }
 
     return argc;
+}
+
+static void _cmd_getControl(int argc, char *argv[]){
+    /* Supress compiler warnings for unused arguments */
+    UNUSED(argc);
+    UNUSED(argv);
+    /* Update controller */
+    ctrl_update();
+    /* Print control action */
+    printf("%f\n", getControl());
+}
+
+static void _cmd_setControlState(int argc, char *argv[])
+{
+    // Check for correct input arguments
+    
+    if(argc != 3) {
+        printf("Incorrect arguments\n");
+    } else {
+        switch(atoi(argv[1])) {
+            // Set controller state
+            case 1:
+                ctrl_set_x1h(atof(argv[2]));
+            break;
+            case 2:
+                ctrl_set_x2h(atof(argv[2]));
+            break;
+            case 3:
+                ctrl_set_x3h(atof(argv[2]));
+            break;
+        }       
+    }
 }

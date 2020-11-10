@@ -15,6 +15,7 @@
 #include "potentiometer.h"
 #include "data_logging.h"
 #include "ammeter.h"
+#include "controller.h"
 
 static void SystemClock_Config(void);
 static void Error_Handler(void);
@@ -40,6 +41,7 @@ int main(void)
     // TEST!
     ctrlMotor_init();
     initKF();
+    ctrl_init();
 
     //pot_init();
     heartbeat_task_init();
