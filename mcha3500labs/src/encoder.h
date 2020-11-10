@@ -28,5 +28,6 @@ float   countToRadians(int32_t);
 float   countToOmega(int32_t);
 void    encoder_enable_interrupts(void);
 void    encoder_disable_interrupts(void);
+int32_t encoder_get_raw(void);
 
 #endif

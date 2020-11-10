@@ -15,6 +15,7 @@
 #include "ammeter.h"
 #include "heartbeat_cmd.h"
 #include "motorControl.h"
+#include "kalman.h"
 void cmd_parse(char *);
 
 // Type for each command table entry

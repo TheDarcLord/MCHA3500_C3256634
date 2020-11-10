@@ -2,9 +2,12 @@
 #include "cmsis_os2.h"
 #include "stm32f4xx_hal_pwr_ex.h"
 
+#include "kalman.h"
+
 #include "motor.h"
 #include "motorControl.h"
 #include "encoder.h"
+#include "IMU.h"
 #include "uart.h"
 #include "cmd_task.h"
 #include "heartbeat_task.h"
@@ -24,6 +27,8 @@ int main(void)
     // Initialise scheduler
     osKernelInitialize();
 
+    
+
     // Initialise hardware modules
     uart_init();
 
@@ -31,17 +36,17 @@ int main(void)
     encoder_init();
     motor_init();
     ammeter_init();
-
+    
     // TEST!
     ctrlMotor_init();
-
-    // TEST ->
-    //
+    initKF();
 
     //pot_init();
     heartbeat_task_init();
     cmd_task_init();
+    IMU_init();
     dummy_task_init();
+    dummy_task_start();
     logging_init();
     
     // Start scheduler

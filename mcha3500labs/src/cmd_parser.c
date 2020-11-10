@@ -5,11 +5,21 @@ static void _help(int, char *[]);
 static void _reset(int, char *[]);
 static void _cmd_getPotentiometerVoltage(int, char *[]);
 static void _cmd_logPotentiometerVoltage(int, char *[]);
-static void _cmd_setMotorVoltage(int, char *[]);
+
+
 static void _cmd_setMotorTorque(int, char *[]);
-static void _cmd_getCurrent(int, char *[]);
-static void _cmd_getOmegaA(int, char *[]);
+static void _cmd_getMotorCurrent(int, char *[]);
+//static void _cmd_setMotorCurrent(int, char *[]);
+static void _cmd_getMotorVelocityA(int, char *[]);  // OmegaA -> Armature Angular Velocity
+static void _cmd_getMotorVoltage(int, char *[]);
 static void _cmd_startMotor(int, char *[]);
+
+
+static void _cmd_logIMUpot(int argc, char *argv[]);
+static void _cmd_logIMU(int argc, char *argv[]);
+
+// Modules that provide commands
+#include "heartbeat_cmd.h"
 
 // Command table
 static CMD_T cmd_table[] =
@@ -20,24 +30,37 @@ static CMD_T cmd_table[] =
     {_cmd_logPotentiometerVoltage   , "logPot"      , ""                          , "Logs Potentiometer voltage level for 2 sec"}, 
     {heartbeat_cmd                  , "heartbeat"   , "[start|stop]"              , "Get status or start/stop heartbeat task"   },
     {_cmd_startMotor                , "startMotor"  , ""                          , "Starts the motor"              },
-    {_cmd_setMotorVoltage           , "setVoltage"  , ""                          , "Set Voltage of Motor (+-12V)"              },
+    {_cmd_getMotorVoltage           , "getVoltage"  , ""                          , "Get Voltage of Motor (+-12V)"              },
     {_cmd_setMotorTorque            , "setTorque"   , ""                          , "Set Torque of Motor"                      },
-    {_cmd_getCurrent                , "getCurrent"  , ""                          , "Get the armature Current"                  },
-    {_cmd_getOmegaA                 , "getOmegaA"   , ""                          , "Get the armature Postion/sec"              }
+    {_cmd_getMotorVelocityA         , "getOmegaA"   , ""                          , "Get the armature Postion/sec"              },
+    //{_cmd_setMotorCurrent           , "setCurrent"  , ""                          , "Set Current of Motor"                      },
+    {_cmd_getMotorCurrent           , "getCurrent"  , ""                          , "Get Current of Motor"                      },
+    {_cmd_logIMUpot                 , "logIMUPot"   , ""                          , "Logs IMU & Potentiometer voltage level for 5 sec"  },
+    {_cmd_logIMU                    , "logIMU"      , ""                          , "Logs IMU"                                          }
 };
+
 enum {CMD_TABLE_SIZE = sizeof(cmd_table)/sizeof(CMD_T)};
 enum {CMD_MAX_TOKENS = 5};      // Maximum number of tokens to process (command + arguments)
 
 // Command function definitions
 static void _print_chip_pinout(void);
 
+void _cmd_getMotorVelocityA(int argc, char *argv[]) {
+    UNUSED(argv);
+    UNUSED(argc);
+    printf("%f\n", motor_get_velocity());
+}
 
-void _cmd_setMotorVoltage(int argc, char *argv[]) {
-    if(argc < 2) {
-        printf("Invalid number of arguments");
-    } else {
-        motor_set_voltage(atof(argv[1]));
-    }
+void _cmd_getMotorVoltage(int argc, char *argv[]) {
+    UNUSED(argv);
+    UNUSED(argc);
+    printf("%f\n", motor_get_voltage());
+}
+
+void _cmd_getMotorCurrent(int argc, char *argv[]) {
+    UNUSED(argv);
+    UNUSED(argc);
+    printf("%f\n", motor_get_current());
 }
 
 void _cmd_setMotorTorque(int argc, char *argv[]) {
@@ -48,33 +71,18 @@ void _cmd_setMotorTorque(int argc, char *argv[]) {
     }
 }
 
-
 void _cmd_startMotor(int argc, char *argv[]) {
     UNUSED(argv);
     UNUSED(argc);
     ctrlMotor_start();
 }
 
-void _cmd_getCurrent(int argc, char *argv[]) {
-    UNUSED(argv);
-    UNUSED(argc); 
-    printf("%f\n", ammeter_get_value());
-}
-
-void _cmd_getOmegaA(int argc, char *argv[]) {
-    UNUSED(argv);
-    UNUSED(argc);
-    printf("%f\n", encoder_pop_count());
-}
-
 void _cmd_getPotentiometerVoltage(int argc, char *argv[]) {
     UNUSED(argv);
-    
-    const float POT_VMAX = 3.3;
 
     if (argc <= 1)
     {
-        printf("Potentiometer ADC Voltage is %f V \n", ((pot_get_value() * POT_VMAX) / 4095.0));
+        printf("Potentiometer ADC Voltage is %f V \n", get_pot_voltage());
     }
     else
     {
@@ -86,8 +94,24 @@ void _cmd_logPotentiometerVoltage(int argc, char *argv[])
 {
     UNUSED(argv);
     UNUSED(argc);
-    potentiometer_logging_start();
+    data_logging_start(POT);
 }
+
+void _cmd_logIMUpot(int argc, char *argv[]) 
+{
+    UNUSED(argv);
+    UNUSED(argc);
+    data_logging_start(IMU_POT);
+}
+
+
+void _cmd_logIMU(int argc, char *argv[])
+{
+    UNUSED(argv);
+    UNUSED(argc);
+    data_logging_start(IMU);
+}
+
 
 void _help(int argc, char *argv[])
 {
