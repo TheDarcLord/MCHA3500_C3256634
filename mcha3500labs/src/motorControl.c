@@ -32,10 +32,12 @@ void ctrlMotor(void *argument) {
         // Should consume < 12W
         CURRENT = ((TORQUE/N) + Tf(OMEGAA)) / mKi;
 
-        if(fabs(x) > 4.125 || (fabs(x)*fabs(VOLTAGE) > 11.0)) {
+        if(fabs(x) > 5 || (fabs(x)*fabs(VOLTAGE) > 11.8)) {
             SAFE++;
-        } else if((fabs(x)*fabs(VOLTAGE) > 11.5)) {
+            printf("Unsafe Ia: %f, Va: %f, Power: %f \n", fabs(x), fabs(VOLTAGE), fabs(x)*fabs(VOLTAGE));
+        } else if((fabs(x)*fabs(VOLTAGE) > 12)) {
             ctrlMotor_stop();
+            printf("Unsafe POWER! \n");
         } else {
             SAFE = 0;
         }
@@ -47,11 +49,15 @@ void ctrlMotor(void *argument) {
         // Ra & Kw defined in Kalman.h
         VOLTAGE = (Ra*CURRENT) + (Kw*OMEGAA) + U;
         
-        if(fabs(VOLTAGE) < 11) {
+        if(fabs(VOLTAGE) < 12) {
             motor_set_voltage(VOLTAGE);
         } else {
-            //printf("VOLTAGE LIMIT EXCEEDED!!! \n");
-            motor_set_voltage(0.0);
+            printf("VOLTAGE LIMIT EXCEEDED!!! \n");
+            if(VOLTAGE > 0) {
+                motor_set_voltage(11.9);
+            } else {
+                motor_set_voltage(-11.9);
+            }
         }
         // (Z+1) = 0.99*_error + 100*U;
         _error = 0.99*_error + 0.995*U;
@@ -78,18 +84,17 @@ void ctrlMotor_init(void) {
 
 void ctrlMotor_start(void) {
     /* Start data logging timer at 100Hz */
+    SAFE = 0;
+    VOLTAGE = 0.0;
+    CURRENT = 0.0;
+    TORQUE = 0.0;
     osTimerStart(_motorCtrlID, 10U);
     encoder_enable_interrupts();
     encoder_set_count(0);
 }
 
 void ctrlMotor_stop(void) {
-    /* TODO: Stop data logging timer */
-    SAFE = 0;
-    VOLTAGE = 0.0;
-    CURRENT = 0.0;
-    TORQUE = 0.0;
-    motor_set_voltage(VOLTAGE);
+    motor_set_voltage(0.0);
     osTimerStop(_motorCtrlID);
     encoder_disable_interrupts();
     encoder_set_count(0);

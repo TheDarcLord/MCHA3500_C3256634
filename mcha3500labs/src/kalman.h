@@ -17,9 +17,9 @@
 
 void initKF(void);
 float runKF(float Ia, float Vin, float Wa);
-float getFilteredAngle(void);
-float getFilteredOmega(void);
-float getFilteredCurrent(void);
+float getFilterAngle(void);
+float getFilterOmega(void);
+float getFilterCurrent(void);
 
 /* Sensor Fusion!>?
  * MODEL:

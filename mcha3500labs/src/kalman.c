@@ -295,15 +295,15 @@ float runKF(float Ia, float Vin, float Wa) {
     return xpd[3];
 }
 
-float getFilteredOmega(void) {
+float getFilterOmega(void) {
     return xpd[0];
 }
 
-float getFilteredAngle(void) {
+float getFilterAngle(void) {
     return xpd[1];
 }
 
-float getFilteredCurrent(void) {
+float getFilterCurrent(void) {
     return xpd[3];
 }
 

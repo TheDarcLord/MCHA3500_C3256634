@@ -14,6 +14,10 @@ static void _cmd_getMotorVelocityA(int, char *[]);  // OmegaA -> Armature Angula
 static void _cmd_getMotorVoltage(int, char *[]);
 static void _cmd_startMotor(int, char *[]);
 
+static void _cmd_getAngleRAW(int, char *[]);
+static void _cmd_getOmegaRAW(int, char *[]);
+static void _cmd_getAngle(int, char *[]);
+static void _cmd_getOmega(int, char *[]);
 
 static void _cmd_logIMUpot(int argc, char *argv[]);
 static void _cmd_logIMU(int argc, char *argv[]);
@@ -34,6 +38,10 @@ static CMD_T cmd_table[] =
     {_cmd_setMotorTorque            , "setTorque"   , ""                          , "Set Torque of Motor"                      },
     {_cmd_getMotorVelocityA         , "getOmegaA"   , ""                          , "Get the armature Postion/sec"              },
     //{_cmd_setMotorCurrent           , "setCurrent"  , ""                          , "Set Current of Motor"                      },
+    {_cmd_getAngle                  , "getAngle"  , ""                          , "Chassis Angle"              },
+    {_cmd_getAngleRAW               , "getAngleRAW"  , ""                          , "Chassis Angle"              },
+    {_cmd_getOmegaRAW               , "getOmegaRAW"  , ""                          , "Chassis Omega"              },
+    {_cmd_getOmega                  , "getOmega"  , ""                          , "Chassis Omega"              },
     {_cmd_getMotorCurrent           , "getCurrent"  , ""                          , "Get Current of Motor"                      },
     {_cmd_logIMUpot                 , "logIMUPot"   , ""                          , "Logs IMU & Potentiometer voltage level for 5 sec"  },
     {_cmd_logIMU                    , "logIMU"      , ""                          , "Logs IMU"                                          }
@@ -76,6 +84,34 @@ void _cmd_startMotor(int argc, char *argv[]) {
     UNUSED(argc);
     ctrlMotor_start();
 }
+
+void _cmd_getAngleRAW(int argc, char *argv[]) {
+    UNUSED(argv);
+    UNUSED(argc);
+    IMU_read();
+    printf("%f\n", get_angle(RADIANS));
+}
+
+void _cmd_getOmegaRAW(int argc, char *argv[]) {
+    UNUSED(argv);
+    UNUSED(argc);
+    IMU_read();
+    printf("%f\n", get_gyroY());
+}
+
+void _cmd_getAngle(int argc, char *argv[]) {
+    UNUSED(argv);
+    UNUSED(argc);
+    printf("%f\n", getFilterAngle());
+}
+
+void _cmd_getOmega(int argc, char *argv[]) {
+    UNUSED(argv);
+    UNUSED(argc);
+    printf("%f\n", getFilterOmega());
+}
+
+
 
 void _cmd_getPotentiometerVoltage(int argc, char *argv[]) {
     UNUSED(argv);
