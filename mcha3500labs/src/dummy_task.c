@@ -61,8 +61,7 @@ uint8_t dummy_task_is_running(void)
 void dummy_task_update(void *arg)
 {
     UNUSED(arg);
-    while(1)
-    {
+    while(1) {
         //printf("Omega: %f \n",encoder_pop_count());
         //osDelay(10); // 100Hz
     }

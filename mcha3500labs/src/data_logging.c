@@ -1,52 +1,86 @@
-#include "cmsis_os2.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <string.h>
-#include <stdint.h>
 #include "data_logging.h"
 #include "encoder.h"
 
 uint16_t logCount;
 osTimerId_t _dataLogID;
-void log_potentiometer(void *argument);
+static osTimerAttr_t _dataLogATTR = {
+    .name = "datalog"
+};
+static void (*log_function)(void);              // Variable to point to function we intend to log
+static void log_pointer(void *argument);
+static void log_potentiometer(void *argument);
+static void log_imu_pot(void *argument);
+static void log_imu(void *argument);
 void logging_init(void);
-void potentiometer_logging_start(void);
-void potentiometer_logging_stop(void);
-
-void log_potentiometer(void *argument) {
-    UNUSED(argument);
-    // TICK = 1m
-    
-    /* TODO: 
-        Print the sample time and potentiometer voltage to,
-        the serial terminal in the format -> 
-        [time],[voltage]
-    */
-    printf("%f, %f\n", (float) logCount/100.0, encoder_pop_count()); // Actually want 'Sample Time'
-    logCount ++;
-    /* TODO: Increment log count */
-
-    /* TODO: Stop logging once 20 seconds is reached (Complete this once you have created the stop function
-    in the next step) */
-    if(logCount > 2000) {
-        potentiometer_logging_stop();
-    }
-}
+void data_logging_start(SENSOR X);
+void data_logging_stop(void);
 
 void logging_init(void) {
-    /* TODO: Initialise timer for use with pendulum data logging */
-    _dataLogID = osTimerNew(log_potentiometer, osTimerPeriodic, (void *)5, NULL);
+    /* Initialise timer for use with generic data logging */
+    _dataLogID = osTimerNew(log_pointer, osTimerPeriodic, NULL, &_dataLogATTR);
 }
 
-void potentiometer_logging_start(void) {
-    /* TODO: Reset the log counter */
+static void log_pointer(void *argument) {
+    UNUSED(argument);
+    logCount++;
+    if(logCount > 200) {
+        data_logging_stop();
+    }
+    // Calls function pointed to by *log_function()
+    (*log_function)();
+}
+
+void data_logging_start(SENSOR X) {
+    /* Pass a function to log_function to LOG */
+    switch(X) {
+        case(POT):
+            log_function = &log_potentiometer;
+        break;
+        case(IMU):
+            log_function = &log_imu;
+        break;
+        case(IMU_POT):
+            log_function = &log_imu_pot;
+        break;
+        default:
+            log_function = &log_potentiometer;
+        break;
+    }
+    /* Reset the log counter */
     logCount = 0;
-    /* TODO: Start data logging timer at 100Hz */
+    /* Start data logging timer at 100Hz */
     osTimerStart(_dataLogID, 10U);
 }
 
-void potentiometer_logging_stop(void) {
-    /* TODO: Stop data logging timer */
+
+void data_logging_stop(void) {
+    /* Stop data logging timer */
     osTimerStop(_dataLogID);
+}
+
+/* LOGGING EACH SENSOR ELEMENT */
+static void log_potentiometer(void *argument) {
+    UNUSED(argument);
+    printf("%f, %f\n", (float) logCount/100.0, get_pot_voltage()); // Actually want 'Sample Time'
+    /* Stop logging once 2 seconds is reached (Complete this once you have created the stop function
+    in the next step) */
+}
+
+static void log_imu(void *argument) {
+    UNUSED(argument);
+    IMU_read();
+    printf("Angle(deg): %f Velo(y): %f \n", get_angle(0), get_gyroY());
+}
+
+static void log_imu_pot(void *argument) {
+    UNUSED(argument);
+
+    IMU_read();
+
+    /* TODO: Print the time, accelerometer angle, gyro angular velocity and pot voltage values to the
+    serial terminal in the format %f,%f,%f,%f\n */
+
+    printf("%f, %f, %f, %f\n", (float) logCount/100.0, get_angle(1), get_gyroY() ,get_pot_voltage()); // Actually want 'Sample Time'    
+    /* Stop logging once 5 seconds is reached (Complete this once you have created the stop function
+    in the next step) */
 }

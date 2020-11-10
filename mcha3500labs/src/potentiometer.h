@@ -15,8 +15,9 @@
 #define PIN_VMAX (3.3e0)
 #define V_PER_C (140e-3)
 
-void     pot_init(void);
-void     pot_deinit(void);
-double pot_get_value(void);
+void        pot_init(void);
+void        pot_deinit(void);
+uint16_t    pot_get_value(void);
+float       get_pot_voltage(void);
 
 #endif
