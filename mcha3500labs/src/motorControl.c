@@ -4,21 +4,20 @@ uint16_t motorCount;
 osTimerId_t _motorCtrlID;
 static void ctrlMotor(void *argument);
 
-static float TORQUE =   0.0;
 static float VOLTAGE =  0.0;
 static float CURRENT =  0.0;
 static float TORQUE =   0.0;
-static float _error =   0;
 static float OMEGAA =   0.0;
 static float Tf(float);
 static uint16_t SAFE =  0;
+static float _error =   0;
 
 #define KI  0.00
-#define KP  0.001
-#define N   18.75
+#define KP  0.01
+#define N   30
 #define mKi 0.0055
-#define BR  0.5947e-9
-#define BF  0.9033e-9
+#define BR  4.4e-06
+#define BF  4.3e-06
 
 void ctrlMotor(void *argument) {
     UNUSED(argument);
@@ -90,11 +89,11 @@ void ctrlMotor_stop(void) {
     VOLTAGE = 0.0;
     CURRENT = 0.0;
     TORQUE = 0.0;
+    motor_set_voltage(VOLTAGE);
     osTimerStop(_motorCtrlID);
     encoder_disable_interrupts();
     encoder_set_count(0);
 }
-
 
 void motor_set_torque(float t) {
     TORQUE = t;
