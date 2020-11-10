@@ -7,11 +7,11 @@ static void _cmd_getPotentiometerVoltage(int, char *[]);
 static void _cmd_logPotentiometerVoltage(int, char *[]);
 static void _cmd_setMotorVoltage(int, char *[]);
 
+static void _cmd_getMotorCurrent(int, char *[]);
 static void _cmd_setMotorCurrent(int, char *[]);
 static void _cmd_startMotor(int, char *[]);
 
 static void _cmd_getOmegaA(int, char *[]);  // OmegaA -> Armature Angular Velocity
-static void _cmd_runKF(int, char *[]);
 
 static void _cmd_logIMUpot(int argc, char *argv[]);
 static void _cmd_logIMU(int argc, char *argv[]);
@@ -30,10 +30,9 @@ static CMD_T cmd_table[] =
     {heartbeat_cmd                  , "heartbeat"   , "[start|stop]"              , "Get status or start/stop heartbeat task"   },
     {_cmd_startMotor                , "startMotor"  , ""                          , "Starts the motor"              },
     {_cmd_setMotorCurrent           , "setCurrent"  , ""                          , "Set Current of Motor"                      },
+    {_cmd_getMotorCurrent           , "getCurrent"  , ""                          , "Get Current of Motor"                      },
     {_cmd_getOmegaA                 , "getOmegaA"   , ""                          , "Get the armature Postion/sec"              },
     {_cmd_setMotorVoltage           , "setVoltage"  , ""                          , "Set Voltage of Motor (+-12V)"                      },
-    {_cmd_runKF                     , "runKF"       , ""                          , "RunKF -> Pulls sensor data & runs"},
-    {_cmd_getOmegaA                 , "getOmegaA"   , ""                          , "Get the armature Postion/sec"                      },
     {_cmd_logIMUpot                 , "logIMUPot"   , ""                          , "Logs IMU & Potentiometer voltage level for 5 sec"  },
     {_cmd_logIMU                    , "logIMU"      , ""                          , "Logs IMU"                                          }
 };
@@ -52,16 +51,11 @@ void _cmd_setMotorVoltage(int argc, char *argv[]) {
         motor_set_voltage(atof(argv[1]));
     }
 }
-void _cmd_runKF(int argc, char *argv[]) {
+
+void _cmd_getMotorCurrent(int argc, char *argv[]) {
     UNUSED(argv);
     UNUSED(argc);
-    //runKF();
-    printf("%f\n", 1.0);
-}
-void _cmd_getOmegaA(int argc, char *argv[]) {
-    UNUSED(argv);
-    UNUSED(argc);
-    printf("%f\n", encoder_pop_count());
+    printf("%f\n", motor_get_current());
 }
 
 void _cmd_setMotorCurrent(int argc, char *argv[]) {
@@ -70,6 +64,12 @@ void _cmd_setMotorCurrent(int argc, char *argv[]) {
     } else {
         motor_set_current(atof(argv[1]));
     }
+}
+
+void _cmd_getOmegaA(int argc, char *argv[]) {
+    UNUSED(argv);
+    UNUSED(argc);
+    printf("%f\n", motor_get_velocity());
 }
 
 void _cmd_startMotor(int argc, char *argv[]) {

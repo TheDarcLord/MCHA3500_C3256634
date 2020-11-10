@@ -4,37 +4,55 @@ uint16_t motorCount;
 osTimerId_t _motorCtrlID;
 static void ctrlMotor(void *argument);
 
+static float TORQUE = 0.0;
 static float VOLTAGE = 0.0;
 static float CURRENT = 0.0;
 static float _error = 0;
 static float OMEGAA = 0.0;
+static uint16_t SAFE = 0;
 
 #define KI  0.00
 #define KP  0.001
 
 void ctrlMotor(void *argument) {
-    
-    UNUSED(argument);
-    OMEGAA = encoder_pop_count();
-    float x = ammeter_get_value();
-    //printf("Va: %f \n", VOLTAGE);
-    //printf("Ia RAW: %f \n", x);
-    x = runKF(x, VOLTAGE, OMEGAA);
-    //printf("Ia FIL: %f \n", x);
+    if(SAFE < 50) {
+        UNUSED(argument);
+        OMEGAA = encoder_pop_count();
+        float x = ammeter_get_value();
+        //printf("Va: %f \n", VOLTAGE);
+        //printf("Ia RAW: %f \n", x);
+        x = runKF(x, VOLTAGE, OMEGAA);
+        // MOTOR SAFETY CHECK - LONGEVITY:
+        // Should remain 25% below stall current: 5.5A
+        // Should consume < 12W
+        if(fabs(x) > 4.125 || (fabs(x)*fabs(VOLTAGE) > 11.0)) {
+            SAFE++;
+        } else if((fabs(x)*fabs(VOLTAGE) > 11.5)) {
+            ctrlMotor_stop();
+        } else {
+            SAFE = 0;
+        }
+        //printf("Ia FIL: %f \n", x);
 
-    // Vin = Ra*Ia + KwWa + U
-    float Ihat = x - CURRENT;
-    float U = (KP*(Ihat) + KI*_error);
-    // Ra & Kw defined in Kalman.h
-    VOLTAGE = (Ra*CURRENT) + (Kw*OMEGAA) + U;
-    // (Z+1) = 0.99*_error + 100*U;
-    if(fabs(VOLTAGE) < 11) {
-        motor_set_voltage(VOLTAGE);
+        // Vin = Ra*Ia + KwWa + U
+        float Ihat = x - CURRENT;
+        float U = (KP*(Ihat) + KI*_error);
+        // Ra & Kw defined in Kalman.h
+        VOLTAGE = (Ra*CURRENT) + (Kw*OMEGAA) + U;
+        
+        if(fabs(VOLTAGE) < 11) {
+            motor_set_voltage(VOLTAGE);
+        } else {
+            //printf("VOLTAGE LIMIT EXCEEDED!!! \n");
+            motor_set_voltage(0.0);
+        }
+        
+        // (Z+1) = 0.99*_error + 100*U;
+        _error = 0.99*_error + 0.995*U;
+        //printf("Err: %f \n", _error);
     } else {
-        //printf("VOLTAGE LIMIT EXCEEDED!!! \n");
-        motor_set_voltage(0.0);
+        ctrlMotor_stop();
     }
-    _error = 0.99*_error + 0.995*U;
 }
 
 void ctrlMotor_init(void) {
@@ -51,6 +69,10 @@ void ctrlMotor_start(void) {
 
 void ctrlMotor_stop(void) {
     /* TODO: Stop data logging timer */
+    SAFE = 0;
+    VOLTAGE = 0.0;
+    CURRENT = 0.0;
+    TORQUE = 0.0;
     osTimerStop(_motorCtrlID);
     encoder_disable_interrupts();
     encoder_set_count(0);
@@ -59,6 +81,10 @@ void ctrlMotor_stop(void) {
 
 void motor_set_current(float c) {
     CURRENT = c;
+}
+
+float motor_get_current(void) {
+    return CURRENT;
 }
 
 float motor_get_velocity(void) {

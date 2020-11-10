@@ -19,7 +19,8 @@ void ctrlMotor_init(void);
 void ctrlMotor_start(void);
 void ctrlMotor_stop(void);
 
-void motor_set_current(float current);
+void motor_set_current(float c);
+float motor_get_current(void);
 float motor_get_velocity(void);
 
 #endif
