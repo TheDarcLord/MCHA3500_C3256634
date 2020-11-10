@@ -58,14 +58,14 @@ static float Cd[SENSOR_OUTPUT*KALMAN_STATES] = {
 static float Rd[SENSOR_OUTPUT*SENSOR_OUTPUT] = {
     0.0057,     0.0,        0.0,
     0.0,        0.0057,     0.0,
-    0.0,        0.0,        0.0022
+    0.0,        0.0,        0.0465
 };
 
 static float Qd[KALMAN_STATES*KALMAN_STATES] = {
     1e-6,   0.0,    0.0,    0.0,
     0.0,    1e-5,   0.0,    0.0,
     0.0,    0.0,    1e-8,    0.0,
-    0.0,    0.0,    0.0,    1e-13
+    0.0,    0.0,    0.0,    5.5e-4
 };
 
 static float Pmd[KALMAN_STATES*KALMAN_STATES] = {
@@ -243,15 +243,16 @@ void initKF(void) {
     arm_mat_init_f32(&temp43b, KALMAN_STATES, SENSOR_OUTPUT, (float32_t*)temp43e);
 }
 
-void runKF(void) {
+float runKF(float Ia, float Vin, float Wa) {
+    // Want Kalman to Take in Measurements as argument -> (easier)
     /* PACK MEASUREMENT VECTOR */
     IMU_read();
     yid[0] = get_angle(RADIANS);    // vk 
     yid[1] = get_gyroY();
-    yid[2] = ammeter_get_value();
+    yid[2] = Ia;
     
-    ukd[0] = 0;
-    ukd[1] = 0;
+    ukd[0] = Vin; // Vin
+    ukd[1] = Wa; // Wa
     // Uk too !
 
     /* Compute Kalman gain */
@@ -290,6 +291,8 @@ void runKF(void) {
     arm_mat_trans_f32(&A,&temp44b);                 // temp44b = A'
     arm_mat_mult_f32(&temp44a,&temp44b,&temp44c);   // temp44c = A*Pp*A'
     arm_mat_add_f32(&temp44c,&Q,&Pm);               // Pm = A*Pp*A' + Q
+
+    return xpd[3];
 }
 
 float getFilteredOmega(void) {

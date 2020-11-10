@@ -13,17 +13,19 @@ static float OMEGAA = 0.0;
 #define KP  0.001
 
 void ctrlMotor(void *argument) {
-    //printf("Va: %f \n", VOLTAGE);
     
     UNUSED(argument);
     OMEGAA = encoder_pop_count();
     float x = ammeter_get_value();
-    //printf("Ia: %f \n", x);
-    float Ra = 6.6002;
-    float Kw = 0.0055;
+    //printf("Va: %f \n", VOLTAGE);
+    //printf("Ia RAW: %f \n", x);
+    x = runKF(x, VOLTAGE, OMEGAA);
+    //printf("Ia FIL: %f \n", x);
+
     // Vin = Ra*Ia + KwWa + U
     float Ihat = x - CURRENT;
     float U = (KP*(Ihat) + KI*_error);
+    // Ra & Kw defined in Kalman.h
     VOLTAGE = (Ra*CURRENT) + (Kw*OMEGAA) + U;
     // (Z+1) = 0.99*_error + 100*U;
     if(fabs(VOLTAGE) < 11) {

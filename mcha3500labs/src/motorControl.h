@@ -13,6 +13,7 @@
 #include "encoder.h"
 #include "motor.h"
 #include "ammeter.h"
+#include "kalman.h"
 
 void ctrlMotor_init(void);
 void ctrlMotor_start(void);

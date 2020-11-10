@@ -55,7 +55,7 @@ void _cmd_setMotorVoltage(int argc, char *argv[]) {
 void _cmd_runKF(int argc, char *argv[]) {
     UNUSED(argv);
     UNUSED(argc);
-    runKF();
+    //runKF();
     printf("%f\n", 1.0);
 }
 void _cmd_getOmegaA(int argc, char *argv[]) {

@@ -16,7 +16,7 @@
 #define  Kw (float) 0.0055
 
 void initKF(void);
-void runKF(void);
+float runKF(float Ia, float Vin, float Wa);
 float getFilteredAngle(void);
 float getFilteredOmega(void);
 float getFilteredCurrent(void);
