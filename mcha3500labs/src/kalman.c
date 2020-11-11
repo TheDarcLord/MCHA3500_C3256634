@@ -9,7 +9,7 @@ static void runKF(void *argument);
 
 void kalman_start(void) {
     //printf("Kalman Filter Started");
-    osTimerStart(_KalmanID, 10U);
+    osTimerStart(_KalmanID, 5U);    // 5ms
 }
 
 void kalman_stop(void) {
@@ -74,9 +74,9 @@ static float Rd[SENSOR_OUTPUT*SENSOR_OUTPUT] = {
 };
 
 static float Qd[KALMAN_STATES*KALMAN_STATES] = {
-    1e-6,   0.0,    0.0,    0.0,
+    1e-3,   0.0,    0.0,    0.0,
     0.0,    1e-5,   0.0,    0.0,
-    0.0,    0.0,    1e-8,    0.0,
+    0.0,    0.0,    1e-5,    0.0,
     0.0,    0.0,    0.0,    5.5e-4
 };
 
@@ -263,8 +263,8 @@ void runKF(void *argument) {
     /* PACK MEASUREMENT VECTOR */
     IMU_read();
     yid[0] = get_angle(RADIANS);    // vk 
-    yid[1] = get_gyroY();
-    yid[2] = ammeter_get_value();
+    yid[1] = get_gyroY();           //
+    yid[2] = ammeter_get_value();   //
 
     ukd[0] = motor_get_voltage();  // Vin
     ukd[1] = motor_get_velocity(); // Wa
@@ -313,7 +313,7 @@ float getFilterOmega(void) {
 }
 
 float getFilterAngle(void) {
-    return xpd[1];
+    return xpd[1] - xpd[2]; 
 }
 
 float getFilterCurrent(void) {

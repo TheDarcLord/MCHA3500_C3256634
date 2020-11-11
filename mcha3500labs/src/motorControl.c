@@ -21,16 +21,16 @@ static float _error =   0;
 void ctrlMotor(void *argument) {
     UNUSED(argument);
     if(SAFE < 50) {
-        TORQUE = getControl();
         OMEGAA  = encoder_pop_count();
+        TORQUE = getControl();
         //printf("Va: %f \n", VOLTAGE);
         //printf("Ia RAW: %f \n", x);
         float x = getFilterCurrent();
-        printf("Theta: %f\nTorque: %f\n",getFilterAngle(),TORQUE);
+        //printf("Theta: %f\nTorque: %f\n",getFilterAngle(),TORQUE);
         // MOTOR SAFETY CHECK - LONGEVITY:
         // Should remain 25% below stall current: 5.5A
         // Should consume < 12W
-        CURRENT = ((TORQUE/N) + Tf(OMEGAA)) / mKi;
+        CURRENT = (((TORQUE)/N) + Tf(OMEGAA)) / mKi;
 
         if(fabs(x) > 5 || (fabs(x)*fabs(VOLTAGE) > 11.8)) {
             SAFE++;
@@ -60,7 +60,7 @@ void ctrlMotor(void *argument) {
             }
         }
         // (Z+1) = 0.99*_error + 100*U;
-        _error = 0.99*_error + 0.995*U;
+        _error = 1*_error + 1*U;
         //printf("Err: %f \n", _error);
     } else {
         ctrlMotor_stop();
@@ -86,7 +86,7 @@ void ctrlMotor_start(void) {
     /* Start data logging timer at 100Hz */
     SAFE = 0;
     //printf("Motor Started");
-    osTimerStart(_motorCtrlID, 10U);
+    osTimerStart(_motorCtrlID, 5U);
     encoder_enable_interrupts();
     encoder_set_count(0);
 }

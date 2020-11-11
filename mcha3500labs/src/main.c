@@ -45,6 +45,10 @@ int main(void)
     dummy_task_init();
     dummy_task_start();
     logging_init();
+
+    kalman_start();
+    
+    //ctrl_start();
     
     // Start scheduler
     osKernelStart();

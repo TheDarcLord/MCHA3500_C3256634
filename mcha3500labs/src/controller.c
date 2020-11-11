@@ -16,7 +16,7 @@ osTimerId_t _CtrlID;
 
 void ctrl_start(void) {
     //printf("Controller Started");
-    osTimerStart(_CtrlID, 10U);
+    osTimerStart(_CtrlID, 5U);
 }
 
 void ctrl_stop(void) {
@@ -26,20 +26,20 @@ void ctrl_stop(void) {
 
 /* COLUMNS = LENGTH CTRL HORIZON */
 static float ctrl_H_f32[CTRL_N_HORIZON*CTRL_N_HORIZON] = {
-20372062.1148564,	368872.273159349,	365707.349634614,	362567.151502001,	359451.487473482,
-368872.273159349,	20365712.1151564,	362576.556167304,	359465.491416546,	356378.731404430,
-365707.349634614,	362576.556167304,	20359470.2168388,	356388.056214256,	353329.972770447,
-362567.151502001,	359465.491416546,	356388.056214256,	20353334.6584365,	350305.025872890,
-359451.487473482,	356378.731404430,	353329.972770447,	350305.025872890,	20347303.7064501
+131050206.745791,	28739824.3524483,	26600911.2368757,	24620741.5553675,	22787533.9277213,
+28739824.3524483,	126601595.407971,	24622056.8973691,	22789433.4896140,	21092821.6613021,
+26600911.2368757,	24622056.8973691,	122790066.927171,	21094039.3135440,	19523885.5195303,
+24620741.5553675,	22789433.4896140,	21094039.3135440,	119524471.999971,	18071390.8623214,
+22787533.9277213,	21092821.6613021,	19523885.5195303,	18071390.8623214,	116726695.832579
 }; // Current Best Guess at model
 
 /* ROWS = LENGTH CTRL HORIZON */
 static float ctrl_Gamma_f32[CTRL_N_HORIZON*CTRL_N_STATE] = {
--118882771.853410,	-221587.959340130,	-153298637.799422,	-15259.5079030857,
--117771432.229115,	-218103.595883141,	-151863813.022083,	-15007.5158465334,
--116668852.648641,	-214647.801730750,	-150440299.360748,	-14757.6779335828,
--115574965.326203,	-211220.355626350,	-149028009.289292,	-14509.9773409262,
--114489703.000578,	-207821.038023943,	-147626855.958912,	-14264.3973754390
+-348272777.225285,	-2731330.81450069,	-47097298.5176270,	-58012.7769453235,
+-322320089.847024,	-2434551.27269786,	-43493039.3579583,	-51342.9858407824,
+-298293537.012653,	-2159818.18743220,	-40156298.7046334,	-45169.2280865449,
+-276050167.884346,	-1905495.35157590,	-37067222.2831482,	-39454.6896736883,
+-255457640.884982,	-1670067.99122911,	-34207429.3275793,	-34165.2887932550,
 }; // Current Best Guess at model
 
 static float ctrl_f_f32[CTRL_N_HORIZON] = {
@@ -76,6 +76,8 @@ static float ctrl_A_f32[CTRL_N_INEQ_CONST*CTRL_N_HORIZON] = {
     0.0,     0.0,     0.0,     1.0,    -1.0,     0.0,     0.0,     0.0,    -1.0,     1.0,
     0.0,     0.0,     0.0,     0.0,     1.0,     0.0,     0.0,     0.0,     0.0,    -1.0
 };
+
+
 static float ctrl_b_f32[CTRL_N_INEQ_CONST] ={
     delta_u_max,
     delta_u_max,
@@ -106,10 +108,7 @@ static float ctrl_lm_f32[CTRL_N_EQ_CONST+CTRL_N_INEQ_CONST+CTRL_N_LB_CONST+CTRL_
 
 /* Define control matrix variables */
 // rows, columns, data array
-/* d) Define and add code to initialise matrix structures for H, Γ, f, xˆ and u...
- * The remaining matrices do not need to me initialised as matrix structures.. 
- * as they will not be used in matrix manipulations using the CMSIS-DSP libraries.
- */ 
+/* Define and add code to initialise matrix structures for H, Γ, f, xˆ and u... */ 
 arm_matrix_instance_f32 ctrl_H =        {CTRL_N_HORIZON, CTRL_N_HORIZON, (float32_t *)ctrl_H_f32};
 arm_matrix_instance_f32 ctrl_Gamma =    {CTRL_N_HORIZON, CTRL_N_STATE, (float32_t *)ctrl_Gamma_f32};
 arm_matrix_instance_f32 ctrl_f =        {CTRL_N_HORIZON, 1, (float32_t *)ctrl_f_f32};
@@ -169,7 +168,7 @@ void ctrl_update(void *argument) {
     ctrl_b_f32[CTRL_N_HORIZON] = -delta_u_min - ctrl_u_f32[0];
     /* Print functions for debugging. Uncomment to use */
     // printmatrix (CTRL_N_HORIZON,CTRL_N_HORIZON,ctrl_H_f32,CTRL_N_HORIZON,"H");
-    // printvector (CTRL_N_HORIZON, ctrl_f_f32, "f");
+    //printvector (CTRL_N_STATE, ctrl_xHat_f32, "x");
 }
 
 /* Update state vector elements */

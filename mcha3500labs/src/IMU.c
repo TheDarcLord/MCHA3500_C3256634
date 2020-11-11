@@ -117,11 +117,11 @@ float get_angle(FORM form) {
     switch(form) {
         case DEGREES:
             // Degrees
-            return (-1 * atan2(get_accZ(), (-1 * get_accX())) * (180.0 / M_PI) );
+            return (atan2(get_accZ(), (get_accX())) * (180.0 / M_PI) );
         break;
         case RADIANS:
             // Radians
-            return (-1 * atan2(get_accZ(),(-1 * get_accX())));
+            return -1*(atan2(get_accZ(),-1*get_accX()));
         break;
         default:
             return -404.0;

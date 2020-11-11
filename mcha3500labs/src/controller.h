@@ -21,8 +21,8 @@ int numits,numadd,numdrop;
 /* Define actuator limits */
 #define u_min           -0.19
 #define u_max           0.19
-#define delta_u_min     -0.01
-#define delta_u_max     0.01
+#define delta_u_min     -0.1
+#define delta_u_max     0.1
 #define N               30.0
 
 void ctrl_init(void);

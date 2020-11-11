@@ -127,6 +127,6 @@ float countToRadians(int32_t c) {
 }
 
 float countToOmega(int32_t c) {
-	float omega = (2 * M_PI * c/CPR) / 0.01; // * (180 / M_PI); // DEGREES
+	float omega = (2 * M_PI * c/CPR) / 0.005; // * (180 / M_PI); // DEGREES
 	return(omega);
 }
